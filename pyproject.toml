@@ -5,7 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "argon2-cffi>=25.1.0",
     "fastapi[standard]>=0.141.1",
+    "ruff>=0.16.7",
+    "sqlalchemy>=2.0.52",
+    "winuvloop>=0.2.5",
 ]
 
 [project.scripts]

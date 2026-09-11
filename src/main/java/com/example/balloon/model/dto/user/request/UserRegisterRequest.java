@@ -6,9 +6,8 @@ import lombok.ToString;
 
 @Data
 public class UserRegisterRequest {
-    @JsonProperty("username")
-    private String username;
-
+    @JsonProperty("user_name")
+    private String userName;
 
     @JsonProperty("user_password")
     @ToString.Exclude

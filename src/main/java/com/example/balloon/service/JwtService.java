@@ -27,11 +27,11 @@ public class JwtService {
 
     public String generateToken(UserEntity userEntity) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", userEntity.getRole().name());
+        claims.put("role", userEntity.getUserRole().name());
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userEntity.getUsername())
+                .setSubject(userEntity.getUserName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -68,15 +68,5 @@ public class JwtService {
             log.error("JWT токен не валиден: {}", e.getMessage());
             return false;
         }
-    }
-    public String generateTokenByUsername(String username) {
-        Map<String, Object> claims = new HashMap<>();
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
     }
 }

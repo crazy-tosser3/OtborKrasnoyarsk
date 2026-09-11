@@ -6,16 +6,17 @@ import lombok.ToString;
 
 @Data
 public class UserUpdateRequest {
-    @JsonProperty("username")
-    private String username;
+    @JsonProperty("user_name")
+    private String userName;
 
     @JsonProperty("user_password")
     @ToString.Exclude
     private String userPassword;
 
-    @JsonProperty("new_username")
-    private String newUsername;
+    @JsonProperty("new_user_name")
+    private String newUserName;
 
     @JsonProperty("new_user_password")
+    @ToString.Exclude
     private String newUserPassword;
 }

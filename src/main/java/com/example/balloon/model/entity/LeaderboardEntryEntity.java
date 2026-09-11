@@ -1,9 +1,8 @@
 package com.example.balloon.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "leaderboard")
@@ -16,14 +15,16 @@ public class LeaderboardEntryEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "username", nullable = false)
-    private String username;
+    @Column(name = "user_name", nullable = false)
+    @JsonProperty("user_name")
+    private String userName;
 
     @Column(name = "score", nullable = false)
+    @JsonProperty("score")
     private int score;
 
-    public LeaderboardEntryEntity(String username, int score) {
-        this.username = username;
+    public LeaderboardEntryEntity(String userName, int score) {
+        this.userName = userName;
         this.score = score;
     }
 }

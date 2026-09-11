@@ -4,34 +4,29 @@ import com.example.balloon.model.dto.user.request.UserLoginRequest;
 import com.example.balloon.model.dto.user.request.UserRegisterRequest;
 import com.example.balloon.model.dto.user.response.UserLoginResponse;
 import com.example.balloon.model.dto.user.response.UserRegisterResponse;
-import com.example.balloon.service.JwtService;
 import com.example.balloon.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/user")
 public class AuthController {
 
     private final UserService userService;
-    private final JwtService jwtService;
 
-    public AuthController(UserService userService, JwtService jwtService) {
+    public AuthController(UserService userService) {
         this.userService = userService;
-        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
     public UserRegisterResponse register(@Valid @RequestBody UserRegisterRequest req) {
         return userService.register(req);
     }
 
     @PostMapping("/login")
-    public UserLoginTokenResponse login(@Valid @RequestBody UserLoginRequest req) {
-        UserLoginResponse user = userService.login(req);
-        String token = jwtService.generateTokenByUsername(user.getUsername());
-        return new UserLoginTokenResponse(user, token);
+    public UserLoginResponse login(@Valid @RequestBody UserLoginRequest req) {
+        return userService.login(req);
     }
-
-    public record UserLoginTokenResponse(UserLoginResponse user, String token) {}
 }

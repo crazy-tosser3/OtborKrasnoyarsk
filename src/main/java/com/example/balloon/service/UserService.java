@@ -14,55 +14,59 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordService passwordService;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, PasswordService passwordService) {
+    public UserService(UserRepository userRepository, PasswordService passwordService, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
+        this.jwtService = jwtService;
     }
 
+    @Transactional(readOnly = true)
     public UserLoginResponse login(UserLoginRequest req) {
-        UserEntity user = userRepository.findByUsername(req.getUsername())
-                .orElseThrow(() -> new UnauthorizedException("invalid username or password"));
+        UserEntity user = userRepository.findByUserName(req.getUserName())
+                .orElseThrow(() -> new UnauthorizedException("user not found"));
 
         if (!checkPassword(req.getUserPassword(), user)) {
-            throw new UnauthorizedException("invalid username or password");
+            throw new UnauthorizedException("wrong password");
         }
-        return new UserLoginResponse(user.getId(), user.getUsername());
+
+        String token = jwtService.generateToken(user);
+        return new UserLoginResponse(token, user.getUserRole());
     }
 
     @Transactional
     public UserRegisterResponse register(UserRegisterRequest req) {
-        if (userRepository.existsByUsername(req.getUsername())) {
+        if (userRepository.existsByUserName(req.getUserName())) {
             throw new ConflictException("user already exists");
         }
         byte[] salt = passwordService.generateSalt();
 
         UserEntity user = new UserEntity();
-        user.setUsername(req.getUsername());
+        user.setUserName(req.getUserName());
         user.setUserEmail(req.getUserEmail());
         user.setPasswordHash(passwordService.hashPassword(req.getUserPassword(), salt));
         user.setSalt(passwordService.encodeSalt(salt));
-        user.setRole(RoleEnum.USER);
-        user.setEnabled(true);
+        user.setUserRole(RoleEnum.USER);
 
         userRepository.save(user);
-        return new UserRegisterResponse(user.getId(), user.getUsername(), user.getUserEmail());
+        return new UserRegisterResponse("user registered");
     }
 
     @Transactional
-    public UserUpdateResponse update(String currentUsername, UserUpdateRequest req) {
-        UserEntity user = userRepository.findByUsername(currentUsername)
+    public UserUpdateResponse update(String currentUserName, UserUpdateRequest req) {
+        UserEntity user = userRepository.findByUserName(currentUserName)
                 .orElseThrow(() -> new NotFoundException("user not found"));
 
         if (!checkPassword(req.getUserPassword(), user)) {
-            throw new UnauthorizedException("invalid password");
+            throw new UnauthorizedException("wrong password");
         }
 
-        String newUsername = req.getNewUsername() != null ? req.getNewUsername() : user.getUsername();
-        if (!newUsername.equals(user.getUsername()) && userRepository.existsByUsername(newUsername)) {
+        String newUserName = req.getNewUserName() != null ? req.getNewUserName() : user.getUserName();
+        if (!newUserName.equals(user.getUserName()) && userRepository.existsByUserName(newUserName)) {
             throw new BadRequestException("new username already exists");
         }
-        user.setUsername(newUsername);
+        user.setUserName(newUserName);
 
         if (req.getNewUserPassword() != null && !req.getNewUserPassword().isBlank()) {
             byte[] newSalt = passwordService.generateSalt();
@@ -71,36 +75,51 @@ public class UserService {
         }
 
         userRepository.save(user);
-        return new UserUpdateResponse(user.getId(), currentUsername, user.getUsername());
+        return new UserUpdateResponse("user updated");
     }
 
     @Transactional
-    public void delete(String currentUsername, UserDeleteRequest req) {
-        UserEntity user = userRepository.findByUsername(currentUsername)
+    public void delete(String currentUserName, UserDeleteRequest req) {
+        UserEntity user = userRepository.findByUserName(currentUserName)
                 .orElseThrow(() -> new NotFoundException("user not found"));
 
         if (!checkPassword(req.getUserPassword(), user)) {
-            throw new UnauthorizedException("invalid password");
+            throw new UnauthorizedException("wrong password");
         }
         userRepository.delete(user);
     }
 
-    public UserProfileResponse profile(String username) {
-        UserEntity user = userRepository.findByUsername(username)
+    @Transactional(readOnly = true)
+    public UserProfileResponse profile(String userName) {
+        UserEntity user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new NotFoundException("user not found"));
-        return new UserProfileResponse(user.getId(), user.getUsername(), user.getUserEmail());
+        return new UserProfileResponse(user.getUserName(), user.getUserEmail());
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<UserEntity> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public UserEntity getUserByUserName(String userName) {
+        return userRepository.findByUserName(userName)
+                .orElseThrow(() -> new NotFoundException("user not found"));
+    }
+
+    @Transactional
+    public void changeRole(String userName, RoleEnum newRole) {
+        UserEntity user = getUserByUserName(userName);
+        user.setUserRole(newRole);
+        userRepository.save(user);
     }
 
     private boolean checkPassword(String rawPassword, UserEntity user) {
         byte[] salt = passwordService.decodeSalt(user.getSalt());
         String hash = passwordService.hashPassword(rawPassword, salt);
-        return constantTimeEquals(hash, user.getPasswordHash());
-    }
-
-    private boolean constantTimeEquals(String a, String b) {
         return java.security.MessageDigest.isEqual(
-                a.getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                b.getBytes(java.nio.charset.StandardCharsets.UTF_8)
+                hash.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                user.getPasswordHash().getBytes(java.nio.charset.StandardCharsets.UTF_8)
         );
     }
 }

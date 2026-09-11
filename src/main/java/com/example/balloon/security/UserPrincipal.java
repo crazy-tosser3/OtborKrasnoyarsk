@@ -22,7 +22,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getUserRole().name()));
     }
 
     @Override
@@ -32,7 +32,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getUserName();
     }
 
     @Override
@@ -52,6 +52,6 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.isEnabled();
+        return true;
     }
 }

@@ -4,14 +4,12 @@ import com.example.balloon.model.dto.user.request.UserDeleteRequest;
 import com.example.balloon.model.dto.user.request.UserUpdateRequest;
 import com.example.balloon.model.dto.user.response.UserProfileResponse;
 import com.example.balloon.model.dto.user.response.UserUpdateResponse;
-import com.example.balloon.security.UserPrincipal;
 import com.example.balloon.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -20,20 +18,18 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/me")
-    public UserProfileResponse profile(@AuthenticationPrincipal UserPrincipal principal) {
-        return userService.profile(principal.getUsername());
+    @GetMapping("/profile/{username}")
+    public UserProfileResponse profile(@PathVariable String username) {
+        return userService.profile(username);
     }
 
-    @PutMapping("/me")
-    public UserUpdateResponse update(@AuthenticationPrincipal UserPrincipal principal,
-                                     @Valid @RequestBody UserUpdateRequest req) {
-        return userService.update(principal.getUsername(), req);
+    @PostMapping("/update")
+    public UserUpdateResponse update(@Valid @RequestBody UserUpdateRequest req) {
+        return userService.update(req.getUserName(), req);
     }
 
-    @DeleteMapping("/me")
-    public void delete(@AuthenticationPrincipal UserPrincipal principal,
-                       @Valid @RequestBody UserDeleteRequest req) {
-        userService.delete(principal.getUsername(), req);
+    @DeleteMapping("/delete")
+    public void delete(@Valid @RequestBody UserDeleteRequest req) {
+        userService.delete(req.getUserName(), req);
     }
 }

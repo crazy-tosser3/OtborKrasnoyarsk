@@ -54,7 +54,7 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
 
-        return (RoleEnum) claims.get("role");
+        return RoleEnum.valueOf(claims.get("role", String.class));
     }
 
     public boolean validateToken(String token) {
@@ -68,5 +68,15 @@ public class JwtService {
             log.error("JWT токен не валиден: {}", e.getMessage());
             return false;
         }
+    }
+    public String generateTokenByUsername(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 }

@@ -1,31 +1,26 @@
 //package com.example.balloon.config;
 //
-//import com.example.balloon.model.enums.RoleEnum;
+//import com.fasterxml.jackson.databind.ObjectMapper;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-//import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+//import org.springframework.http.MediaType;
 //import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 //import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 //import org.springframework.security.config.http.SessionCreationPolicy;
-//import org.springframework.security.core.userdetails.UserDetailsService;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.security.web.SecurityFilterChain;
 //import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+//
+//import java.util.Map;
 //
 //@Configuration
 //@EnableWebSecurity
 //public class SecurityConfig {
 //
 //    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-//    private final UserDetailsService userDetailsService;
+//    private final ObjectMapper objectMapper = new ObjectMapper();
 //
-//    public SecurityConfig(UserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
-//        this.userDetailsService = userDetailsService;
+//    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
 //        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 //    }
 //
@@ -33,27 +28,26 @@
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        http
 //                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/auth/**").permitAll()
-//                        .requestMatchers("/api/**").permitAll()
-//                        .anyRequest().hasRole("ADMIN")
+//                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//                        .anyRequest().authenticated()
 //                )
-//                .userDetailsService(userDetailsService)
 //                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 //                .csrf(AbstractHttpConfigurer::disable)
 //                .sessionManagement(session -> session
 //                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                )
+//                .exceptionHandling(ex -> ex
+//                        .authenticationEntryPoint((req, res, e) -> writeJsonError(res, 401, "unauthorized"))
+//                        .accessDeniedHandler((req, res, e) -> writeJsonError(res, 403, "forbidden"))
 //                );
 //
 //        return http.build();
 //    }
 //
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-//        return config.getAuthenticationManager();
-//    }
-//
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
+//    private void writeJsonError(jakarta.servlet.http.HttpServletResponse res, int status, String message) throws java.io.IOException {
+//        res.setStatus(status);
+//        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+//        res.getWriter().write(objectMapper.writeValueAsString(Map.of("error", message)));
 //    }
 //}

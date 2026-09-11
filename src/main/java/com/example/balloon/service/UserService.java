@@ -1,7 +1,9 @@
-//package com.example.demo.service;
+//package com.example.balloon.service;
 //
 //
-//import com.example.demo.repository.*;
+//import com.example.balloon.model.dto.user.response.UserLoginResponse;
+//import com.example.balloon.model.entity.UserEntity;
+//import com.example.balloon.repository.*;
 //import org.springframework.stereotype.Service;
 //
 //import java.util.List;
@@ -32,7 +34,7 @@
 //    }
 //
 //    // ---------- login ----------
-//    public void login(UserLogin req) {
+//    public UserLoginResponse login(UserLogin req) {
 //        UserEntity user = userRepository.findById(req.getUserName())
 //                .orElseThrow(() -> new UnauthorizedException("user not found"));
 //

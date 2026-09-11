@@ -7,5 +7,5 @@ import lombok.*;
 @NoArgsConstructor
 public class UserLoginResponse {
     private String id;
-    private String userName;
+    private String username;
 }

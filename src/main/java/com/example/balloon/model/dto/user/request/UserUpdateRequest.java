@@ -5,14 +5,14 @@ import lombok.Data;
 
 @Data
 public class UserUpdateRequest {
-    @JsonProperty("user_name")
-    private String userName;
+    @JsonProperty("username")
+    private String username;
 
     @JsonProperty("user_password")
     private String userPassword;
 
-    @JsonProperty("new_user_name")
-    private String newUserName;
+    @JsonProperty("new_username")
+    private String newUsername;
 
     @JsonProperty("new_user_password")
     private String newUserPassword;

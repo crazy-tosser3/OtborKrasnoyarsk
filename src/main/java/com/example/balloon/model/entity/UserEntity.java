@@ -1,5 +1,6 @@
 package com.example.balloon.model.entity;
 
+import com.example.balloon.model.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,8 +15,8 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "user_name", nullable = false, unique = true)
-    private String userName;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Column(name = "user_email")
     private String userEmail;
@@ -25,4 +26,10 @@ public class UserEntity {
 
     @Column(name = "salt", nullable = false)
     private String salt;
+
+    @Column(name = "role", nullable = false)
+    private RoleEnum role;
+
+    @Column(name = "enabled")
+    private boolean enabled;
 }

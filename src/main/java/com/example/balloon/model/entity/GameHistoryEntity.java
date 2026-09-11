@@ -14,8 +14,8 @@ public class GameHistoryEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "user_name", nullable = false)
-    private String userName;
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Column(name = "score", nullable = false)
     private int score;

@@ -20,6 +20,6 @@ public class RewardEntity {
     @Column(name = "claimed", nullable = false)
     private boolean claimed;
 
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "username")
+    private String username;
 }

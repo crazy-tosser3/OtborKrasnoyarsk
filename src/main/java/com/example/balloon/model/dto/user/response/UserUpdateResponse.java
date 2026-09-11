@@ -7,6 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 public class UserUpdateResponse {
     private String id;
-    private String userName;
+    private String username;
     private String newUserName;
 }

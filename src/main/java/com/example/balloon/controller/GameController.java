@@ -1,10 +1,11 @@
 package com.example.balloon.controller;
 
-import com.example.balloon.model.dto.game.LiveLeaderboardResponse;
 import com.example.balloon.model.dto.game.GameHistoryResponse;
 import com.example.balloon.model.dto.game.LeaderboardEntryResponse;
+import com.example.balloon.model.dto.game.LiveLeaderboardResponse;
 import com.example.balloon.model.dto.tournament.TournamentResponse;
 import com.example.balloon.service.GameService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,13 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class GameController {
 
     private final GameService gameService;
-
-    public GameController(GameService gameService) {
-        this.gameService = gameService;
-    }
 
     @GetMapping("/games/history/global")
     public ResponseEntity<List<GameHistoryResponse>> getGlobalHistory() {

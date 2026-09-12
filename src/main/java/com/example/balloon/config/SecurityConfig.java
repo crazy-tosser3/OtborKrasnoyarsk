@@ -35,6 +35,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/login", "/api/user/register").permitAll()
                         .requestMatchers("/api/user/update", "/api/user/delete", "/api/user/profile/**").permitAll()
                         .requestMatchers("/api/games/**", "/api/tournament/**", "/api/rewards/**").permitAll()
+                        .requestMatchers("/api/minigame/leaderboard").permitAll()
+                        .requestMatchers("/api/minigame/start", "/api/minigame/finish").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )

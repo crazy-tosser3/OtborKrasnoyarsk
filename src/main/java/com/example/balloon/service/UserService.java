@@ -1,8 +1,7 @@
 package com.example.balloon.service;
 
 import com.example.balloon.exception.*;
-import com.example.balloon.model.dto.common.MessageResponse;
-import com.example.balloon.model.dto.user.*;
+import com.example.balloon.model.dto.*;
 import com.example.balloon.model.entity.UserEntity;
 import com.example.balloon.model.enums.RoleEnum;
 import com.example.balloon.repository.UserRepository;
@@ -23,11 +22,11 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserLoginResponse login(UserLoginRequest req) {
-        UserEntity user = userRepository.findByUserName(req.getUserName())
+    public UserLoginResponse login(UserLoginRequest request) {
+        UserEntity user = userRepository.findByUserName(request.getUserName())
                 .orElseThrow(() -> new UnauthorizedException("user not found"));
 
-        if (!checkPassword(req.getUserPassword(), user)) {
+        if (!checkPassword(request.getUserPassword(), user)) {
             throw new UnauthorizedException("wrong password");
         }
 
@@ -36,61 +35,62 @@ public class UserService {
     }
 
     @Transactional
-    public MessageResponse register(UserRegisterRequest req) {
-        if (userRepository.existsByUserName(req.getUserName())) {
+    public String register(UserRegisterRequest request) {
+        if (userRepository.existsByUserName(request.getUserName())) {
             throw new ConflictException("user already exists");
         }
         byte[] salt = passwordService.generateSalt();
 
         UserEntity user = new UserEntity();
-        user.setUserName(req.getUserName());
-        user.setUserEmail(req.getUserEmail());
-        user.setPasswordHash(passwordService.hashPassword(req.getUserPassword(), salt));
+        user.setUserName(request.getUserName());
+        user.setUserEmail(request.getUserEmail());
+        user.setPasswordHash(passwordService.hashPassword(request.getUserPassword(), salt));
         user.setSalt(passwordService.encodeSalt(salt));
         user.setUserRole(RoleEnum.USER);
 
         userRepository.save(user);
-        return new MessageResponse("user registered");
+        return "user registered";
     }
 
     @Transactional
-    public MessageResponse update(String currentUserName, UserUpdateRequest req) {
-        UserEntity user = userRepository.findByUserName(currentUserName)
+    public String update(UserUpdateRequest request) {
+        UserEntity user = userRepository.findByUserName(request.getUserName())
                 .orElseThrow(() -> new NotFoundException("user not found"));
 
-        if (!checkPassword(req.getUserPassword(), user)) {
+        if (!checkPassword(request.getUserPassword(), user)) {
             throw new UnauthorizedException("wrong password");
         }
 
-        String newUserName = req.getNewUserName() != null ? req.getNewUserName() : user.getUserName();
+        String newUserName = request.getNewUserName() != null ? request.getNewUserName() : user.getUserName();
         if (!newUserName.equals(user.getUserName()) && userRepository.existsByUserName(newUserName)) {
             throw new BadRequestException("new username already exists");
         }
         user.setUserName(newUserName);
 
-        if (req.getNewUserPassword() != null && !req.getNewUserPassword().isBlank()) {
+        if (request.getNewUserPassword() != null && !request.getNewUserPassword().isBlank()) {
             byte[] newSalt = passwordService.generateSalt();
-            user.setPasswordHash(passwordService.hashPassword(req.getNewUserPassword(), newSalt));
+            user.setPasswordHash(passwordService.hashPassword(request.getNewUserPassword(), newSalt));
             user.setSalt(passwordService.encodeSalt(newSalt));
         }
 
         userRepository.save(user);
-        return new MessageResponse("user updated");
+        return "user updated";
     }
 
     @Transactional
-    public void delete(String currentUserName, UserDeleteRequest req) {
-        UserEntity user = userRepository.findByUserName(currentUserName)
+    public String delete(UserDeleteRequest request) {
+        UserEntity user = userRepository.findByUserName(request.getUserName())
                 .orElseThrow(() -> new NotFoundException("user not found"));
 
-        if (!checkPassword(req.getUserPassword(), user)) {
+        if (!checkPassword(request.getUserPassword(), user)) {
             throw new UnauthorizedException("wrong password");
         }
         userRepository.delete(user);
+        return "user deleted";
     }
 
     @Transactional(readOnly = true)
-    public UserProfileResponse profile(String userName) {
+    public UserProfileResponse getProfile(String userName) {
         UserEntity user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new NotFoundException("user not found"));
         return new UserProfileResponse(user.getUserName(), user.getUserEmail());

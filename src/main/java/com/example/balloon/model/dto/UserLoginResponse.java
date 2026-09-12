@@ -1,16 +1,14 @@
-package com.example.balloon.model.dto.user;
+package com.example.balloon.model.dto;
 
 import com.example.balloon.model.enums.RoleEnum;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserLoginResponse {
-    @JsonProperty("token")
     private String token;
-
-    @JsonProperty("role")
     private RoleEnum role;
 }

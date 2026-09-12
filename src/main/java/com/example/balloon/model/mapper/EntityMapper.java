@@ -1,12 +1,6 @@
 package com.example.balloon.model.mapper;
 
-import com.example.balloon.model.dto.game.GameHistoryResponse;
-import com.example.balloon.model.dto.game.LeaderboardEntryResponse;
-import com.example.balloon.model.dto.reward.RewardRequest;
-import com.example.balloon.model.dto.reward.RewardResponse;
-import com.example.balloon.model.dto.tournament.TournamentRequest;
-import com.example.balloon.model.dto.tournament.TournamentResponse;
-import com.example.balloon.model.dto.user.UserResponse;
+import com.example.balloon.model.dto.*;
 import com.example.balloon.model.entity.*;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +8,45 @@ import java.util.List;
 
 @Component
 public class EntityMapper {
+    public TournamentResponse toTournamentResponse(TournamentEntity entity) {
+        return new TournamentResponse(
+                entity.getId(),
+                entity.getName(),
+                entity.getStartedAt(),
+                entity.getEndedAt(),
+                entity.getWinner()
+        );
+    }
+
+    public List<TournamentResponse> toTournamentResponse(List<TournamentEntity> entities) {
+        return entities.stream().map(this::toTournamentResponse).toList();
+    }
+
+    public ActiveTournamentResponse toActiveTournamentResponse(TournamentEntity entity) {
+        return new ActiveTournamentResponse(
+                entity.getId(),
+                entity.getName(),
+                entity.getStartedAt(),
+                entity.getEndedAt()
+        );
+    }
+
+    public List<ActiveTournamentResponse> toActiveTournamentResponseList(List<TournamentEntity> entities) {
+        return entities.stream().map(this::toActiveTournamentResponse).toList();
+    }
+
+    public RewardResponse toRewardResponse(RewardEntity entity) {
+        return new RewardResponse(
+                entity.getId(),
+                entity.getName(),
+                entity.getClaimed(),
+                entity.getUserName()
+        );
+    }
+
+    public List<RewardResponse> toRewardResponseList(List<RewardEntity> entities) {
+        return entities.stream().map(this::toRewardResponse).toList();
+    }
 
     public UserResponse toUserResponse(UserEntity entity) {
         return new UserResponse(
@@ -39,53 +72,5 @@ public class EntityMapper {
 
     public List<GameHistoryResponse> toGameHistoryResponseList(List<GameHistoryEntity> entities) {
         return entities.stream().map(this::toGameHistoryResponse).toList();
-    }
-
-    public LeaderboardEntryResponse toLeaderboardEntryResponse(LeaderboardEntryEntity entity) {
-        return new LeaderboardEntryResponse(
-                entity.getUserName(),
-                entity.getScore()
-        );
-    }
-
-    public List<LeaderboardEntryResponse> toLeaderboardEntryResponseList(List<LeaderboardEntryEntity> entities) {
-        return entities.stream().map(this::toLeaderboardEntryResponse).toList();
-    }
-
-    public TournamentResponse toTournamentResponse(TournamentEntity entity) {
-        return new TournamentResponse(
-                entity.getId(),
-                entity.getName(),
-                entity.getEndsAt()
-        );
-    }
-
-    public List<TournamentResponse> toTournamentResponseList(List<TournamentEntity> entities) {
-        return entities.stream().map(this::toTournamentResponse).toList();
-    }
-
-    public RewardResponse toRewardResponse(RewardEntity entity) {
-        return new RewardResponse(
-                entity.getId(),
-                entity.getName(),
-                entity.isClaimed(),
-                entity.getUserName()
-        );
-    }
-
-    public List<RewardResponse> toRewardResponseList(List<RewardEntity> entities) {
-        return entities.stream().map(this::toRewardResponse).toList();
-    }
-
-    public RewardEntity toRewardEntity(RewardRequest dto) {
-        RewardEntity entity = new RewardEntity();
-        entity.setName(dto.getName());
-        entity.setClaimed(dto.isClaimed());
-        entity.setUserName(dto.getUserName());
-        return entity;
-    }
-
-    public TournamentEntity toTournamentEntity(TournamentRequest dto) {
-        return new TournamentEntity(dto.getName(), dto.getEndsAt());
     }
 }

@@ -3,6 +3,7 @@ package com.example.balloon.model.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "mini_game_sessions")
@@ -12,23 +13,20 @@ import lombok.*;
 public class MiniGameSessionEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    @JsonProperty("id")
     private String id;
 
-    @Column(name = "user_name", nullable = false)
-    @JsonProperty("user_name")
+    @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "score", nullable = false)
-    @JsonProperty("score")
-    private int score;
+    @Column(name = "score")
+    private Integer score;
 
-    @Column(name = "started_at")
-    @JsonProperty("started_at")
+    @CreationTimestamp
+    @Column(name = "started_at", updatable = false)
     private String startedAt;
 
-    @Column(name = "finished", nullable = false)
-    @JsonProperty("finished")
-    private boolean finished;
+    @Column(name = "finished")
+    private Boolean finished;
 }

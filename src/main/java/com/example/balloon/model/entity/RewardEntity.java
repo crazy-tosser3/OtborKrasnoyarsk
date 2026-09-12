@@ -16,15 +16,12 @@ public class RewardEntity {
     @JsonProperty("id")
     private String id;
 
-    @Column(name = "name", nullable = false)
-    @JsonProperty("name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "claimed", nullable = false)
-    @JsonProperty("claimed")
-    private boolean claimed;
+    @Column(name = "claimed")
+    private Boolean claimed;
 
     @Column(name = "user_name")
-    @JsonProperty("user_name")
     private String userName;
 }

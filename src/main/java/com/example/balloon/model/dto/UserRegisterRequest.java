@@ -1,8 +1,7 @@
-package com.example.balloon.model.dto.user;
+package com.example.balloon.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
 public class UserRegisterRequest {
@@ -10,7 +9,6 @@ public class UserRegisterRequest {
     private String userName;
 
     @JsonProperty("user_password")
-    @ToString.Exclude
     private String userPassword;
 
     @JsonProperty("user_email")

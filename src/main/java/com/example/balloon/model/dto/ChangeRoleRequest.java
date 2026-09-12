@@ -1,4 +1,4 @@
-package com.example.balloon.model.dto.user;
+package com.example.balloon.model.dto;
 
 import com.example.balloon.model.enums.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,6 +9,5 @@ public class ChangeRoleRequest {
     @JsonProperty("user_name")
     private String userName;
 
-    @JsonProperty("role")
     private RoleEnum role;
 }

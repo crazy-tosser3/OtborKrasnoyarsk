@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RewardRepository extends JpaRepository<RewardEntity, String> {
-    List<RewardEntity> findByUserName(String userName);
+    List<RewardEntity> findByUserNameIgnoreCase(String username);
 }

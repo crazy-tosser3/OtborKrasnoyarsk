@@ -1,4 +1,4 @@
-package com.example.balloon.model.dto.reward;
+package com.example.balloon.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

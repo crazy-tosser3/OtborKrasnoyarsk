@@ -1,7 +1,6 @@
 package com.example.balloon.model.entity;
 
 import com.example.balloon.model.enums.RoleEnum;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,28 +12,22 @@ import lombok.*;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @JsonProperty("id")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "user_name", nullable = false, unique = true)
-    @JsonProperty("user_name")
+    @Column(name = "user_name", unique = true, nullable = false)
     private String userName;
 
-    @Column(name = "user_email", unique = true)
-    @JsonProperty("user_email")
+    @Column(name = "user_email", unique = true, nullable = false)
     private String userEmail;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_role", nullable = false)
-    @JsonProperty("user_role")
+    @Column(name = "user_role")
     private RoleEnum userRole;
 
     @Column(name = "password_hash", nullable = false)
-    @JsonProperty("password_hash")
     private String passwordHash;
 
     @Column(name = "salt", nullable = false)
-    @JsonProperty("salt")
     private String salt;
 }

@@ -3,6 +3,9 @@ package com.example.balloon.model.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tournaments")
@@ -16,16 +19,16 @@ public class TournamentEntity {
     @JsonProperty("id")
     private String id;
 
-    @Column(name = "name", nullable = false)
-    @JsonProperty("name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "ends_at")
-    @JsonProperty("ends_at")
-    private String endsAt;
+    @CreationTimestamp
+    @Column(name = "started_at", updatable = false)
+    private LocalDateTime startedAt;
 
-    public TournamentEntity(String name, String endsAt) {
-        this.name = name;
-        this.endsAt = endsAt;
-    }
+    @Column(name = "ended_at")
+    private LocalDateTime endedAt;
+
+    @Column(name = "winner")
+    private String winner;
 }

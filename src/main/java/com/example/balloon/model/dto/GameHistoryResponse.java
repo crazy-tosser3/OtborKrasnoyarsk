@@ -1,20 +1,20 @@
-package com.example.balloon.model.dto.game;
+package com.example.balloon.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameHistoryResponse {
-    @JsonProperty("id")
     private String id;
 
     @JsonProperty("user_name")
     private String userName;
 
-    @JsonProperty("score")
-    private int score;
+    private Integer score;
 
     @JsonProperty("played_at")
     private String playedAt;

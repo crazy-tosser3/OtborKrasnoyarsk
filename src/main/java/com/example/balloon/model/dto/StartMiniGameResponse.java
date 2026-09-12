@@ -1,15 +1,14 @@
-package com.example.balloon.model.dto.minigame;
+package com.example.balloon.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class StartMiniGameResponse {
     @JsonProperty("session_id")
     private String sessionId;
 
-    @JsonProperty("duration")
-    private int duration;
+    private Integer duration;
 }

@@ -1,16 +1,12 @@
-package com.example.balloon.model.dto.reward;
+package com.example.balloon.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class RewardRequest {
-
-    @JsonProperty("name")
     private String name;
-
-    @JsonProperty("claimed")
-    private boolean claimed;
+    private Boolean claimed;
 
     @JsonProperty("user_name")
     private String userName;

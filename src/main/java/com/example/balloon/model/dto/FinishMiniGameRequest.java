@@ -1,13 +1,12 @@
-package com.example.balloon.model.dto.minigame;
+package com.example.balloon.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Data;
 
 @Data
 public class FinishMiniGameRequest {
     @JsonProperty("session_id")
     private String sessionId;
 
-    @JsonProperty("score")
-    private int score;
+    private Integer score;
 }

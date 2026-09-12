@@ -1,15 +1,16 @@
-package com.example.balloon.model.dto.game;
+package com.example.balloon.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class LeaderboardEntryResponse {
     @JsonProperty("user_name")
     private String userName;
 
-    @JsonProperty("score")
-    private int score;
+    private Integer score;
 }

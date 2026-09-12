@@ -1,36 +1,41 @@
 package com.example.balloon.controller;
 
-import com.example.balloon.model.dto.game.LeaderboardEntryResponse;
-import com.example.balloon.model.dto.minigame.FinishMiniGameRequest;
-import com.example.balloon.model.dto.minigame.StartMiniGameResponse;
+import com.example.balloon.model.dto.*;
 import com.example.balloon.service.MiniGameService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/minigame")
-@RequiredArgsConstructor
 public class MiniGameController {
 
     private final MiniGameService miniGameService;
 
+    public MiniGameController(MiniGameService miniGameService) {
+        this.miniGameService = miniGameService;
+    }
+
     @PostMapping("/start")
-    public ResponseEntity<StartMiniGameResponse> start(@AuthenticationPrincipal String userName) {
-        return ResponseEntity.ok(miniGameService.start(userName));
+    public ResponseEntity<StartMiniGameResponse> start(Principal principal) {
+        if (principal == null || principal.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        StartMiniGameResponse response = miniGameService.start(principal.getName());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/finish")
-    public ResponseEntity<Map<String, Object>> finish(@RequestBody FinishMiniGameRequest req) {
-        return ResponseEntity.ok(miniGameService.finish(req));
+    public ResponseEntity<FinishMiniGameResponse> finish(@RequestBody FinishMiniGameRequest request) {
+        return ResponseEntity.ok(miniGameService.finish(request));
     }
 
     @GetMapping("/leaderboard")
-    public ResponseEntity<List<LeaderboardEntryResponse>> leaderboard() {
+    public ResponseEntity<List<MiniGameLeaderboardProjection>> getLeaderboard() {
         return ResponseEntity.ok(miniGameService.getLeaderboard());
     }
 }

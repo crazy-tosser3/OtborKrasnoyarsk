@@ -1,11 +1,13 @@
 package com.example.balloon.controller;
 
-import com.example.balloon.model.dto.user.request.UserDeleteRequest;
-import com.example.balloon.model.dto.user.request.UserUpdateRequest;
-import com.example.balloon.model.dto.user.response.UserProfileResponse;
-import com.example.balloon.model.dto.user.response.UserUpdateResponse;
+import com.example.balloon.model.dto.common.MessageResponse;
+import com.example.balloon.model.dto.user.UserDeleteRequest;
+import com.example.balloon.model.dto.user.UserUpdateRequest;
+import com.example.balloon.model.dto.user.UserProfileResponse;
 import com.example.balloon.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,17 +21,20 @@ public class UserController {
     }
 
     @GetMapping("/profile/{username}")
-    public UserProfileResponse profile(@PathVariable String username) {
-        return userService.profile(username);
+    public ResponseEntity<UserProfileResponse> profile(@PathVariable String username) {
+        UserProfileResponse response = userService.profile(username);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/update")
-    public UserUpdateResponse update(@Valid @RequestBody UserUpdateRequest req) {
-        return userService.update(req.getUserName(), req);
+    public ResponseEntity<MessageResponse> update(@Valid @RequestBody UserUpdateRequest req) {
+        MessageResponse response = userService.update(req.getUserName(), req);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete")
-    public void delete(@Valid @RequestBody UserDeleteRequest req) {
+    public ResponseEntity<Void> delete(@Valid @RequestBody UserDeleteRequest req) {
         userService.delete(req.getUserName(), req);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

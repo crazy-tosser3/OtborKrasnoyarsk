@@ -1,7 +1,6 @@
-package com.example.balloon.model.dto;
+package com.example.balloon.model.dto.game;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.example.balloon.model.entity.LeaderboardEntryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,5 +13,5 @@ public class LiveLeaderboardResponse {
     private String updatedAt;
 
     @JsonProperty("top")
-    private List<LeaderboardEntryEntity> top;
+    private List<LeaderboardEntryResponse> top;
 }

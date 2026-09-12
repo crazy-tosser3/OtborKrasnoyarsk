@@ -1,12 +1,13 @@
 package com.example.balloon.controller;
 
-import com.example.balloon.model.dto.user.request.UserLoginRequest;
-import com.example.balloon.model.dto.user.request.UserRegisterRequest;
-import com.example.balloon.model.dto.user.response.UserLoginResponse;
-import com.example.balloon.model.dto.user.response.UserRegisterResponse;
+import com.example.balloon.model.dto.common.MessageResponse;
+import com.example.balloon.model.dto.user.UserLoginRequest;
+import com.example.balloon.model.dto.user.UserRegisterRequest;
+import com.example.balloon.model.dto.user.UserLoginResponse;
 import com.example.balloon.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,13 +21,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserRegisterResponse register(@Valid @RequestBody UserRegisterRequest req) {
-        return userService.register(req);
+    public ResponseEntity<MessageResponse> register(@Valid @RequestBody UserRegisterRequest req) {
+        MessageResponse response = userService.register(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public UserLoginResponse login(@Valid @RequestBody UserLoginRequest req) {
-        return userService.login(req);
+    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest req) {
+        UserLoginResponse response = userService.login(req);
+        return ResponseEntity.ok(response);
     }
 }

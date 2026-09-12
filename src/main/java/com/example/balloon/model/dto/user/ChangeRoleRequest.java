@@ -1,4 +1,4 @@
-package com.example.balloon.model.dto.user.request;
+package com.example.balloon.model.dto.user;
 
 import com.example.balloon.model.enums.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;

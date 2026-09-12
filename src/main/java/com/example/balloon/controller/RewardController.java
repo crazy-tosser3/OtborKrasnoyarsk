@@ -1,8 +1,9 @@
 package com.example.balloon.controller;
 
-import com.example.balloon.model.dto.ClaimRewardRequest;
-import com.example.balloon.model.entity.RewardEntity;
+import com.example.balloon.model.dto.reward.ClaimRewardRequest;
+import com.example.balloon.model.dto.reward.RewardResponse;
 import com.example.balloon.service.RewardService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +19,12 @@ public class RewardController {
     }
 
     @GetMapping("/rewards")
-    public List<RewardEntity> getByUserName(@RequestParam("username") String userName) {
-        return rewardService.getByUserName(userName);
+    public ResponseEntity<List<RewardResponse>> getByUserName(@RequestParam("username") String userName) {
+        return ResponseEntity.ok(rewardService.getByUserName(userName));
     }
 
     @PostMapping("/rewards/claim")
-    public RewardEntity claimReward(@RequestBody ClaimRewardRequest req) {
-        return rewardService.claimReward(req);
+    public ResponseEntity<RewardResponse> claimReward(@RequestBody ClaimRewardRequest req) {
+        return ResponseEntity.ok(rewardService.claimReward(req));
     }
 }

@@ -1,8 +1,8 @@
 package com.example.balloon.service;
 
 import com.example.balloon.exception.*;
-import com.example.balloon.model.dto.user.request.*;
-import com.example.balloon.model.dto.user.response.*;
+import com.example.balloon.model.dto.common.MessageResponse;
+import com.example.balloon.model.dto.user.*;
 import com.example.balloon.model.entity.UserEntity;
 import com.example.balloon.model.enums.RoleEnum;
 import com.example.balloon.repository.UserRepository;
@@ -36,7 +36,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserRegisterResponse register(UserRegisterRequest req) {
+    public MessageResponse register(UserRegisterRequest req) {
         if (userRepository.existsByUserName(req.getUserName())) {
             throw new ConflictException("user already exists");
         }
@@ -50,11 +50,11 @@ public class UserService {
         user.setUserRole(RoleEnum.USER);
 
         userRepository.save(user);
-        return new UserRegisterResponse("user registered");
+        return new MessageResponse("user registered");
     }
 
     @Transactional
-    public UserUpdateResponse update(String currentUserName, UserUpdateRequest req) {
+    public MessageResponse update(String currentUserName, UserUpdateRequest req) {
         UserEntity user = userRepository.findByUserName(currentUserName)
                 .orElseThrow(() -> new NotFoundException("user not found"));
 
@@ -75,7 +75,7 @@ public class UserService {
         }
 
         userRepository.save(user);
-        return new UserUpdateResponse("user updated");
+        return new MessageResponse("user updated");
     }
 
     @Transactional

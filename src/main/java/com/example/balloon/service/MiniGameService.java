@@ -2,8 +2,8 @@ package com.example.balloon.service;
 
 import com.example.balloon.exception.BadRequestException;
 import com.example.balloon.exception.NotFoundException;
+import com.example.balloon.model.dto.game.LeaderboardEntryResponse;
 import com.example.balloon.model.dto.minigame.FinishMiniGameRequest;
-import com.example.balloon.model.dto.minigame.MiniGameLeaderboardEntry;
 import com.example.balloon.model.dto.minigame.StartMiniGameResponse;
 import com.example.balloon.model.entity.GameHistoryEntity;
 import com.example.balloon.model.entity.MiniGameSessionEntity;
@@ -71,12 +71,11 @@ public class MiniGameService {
     }
 
     @Transactional(readOnly = true)
-    public List<MiniGameLeaderboardEntry> getLeaderboard() {
+    public List<LeaderboardEntryResponse> getLeaderboard() {
         return sessionRepository.getLeaderboard().stream()
-                .map(p -> new MiniGameLeaderboardEntry(
+                .map(p -> new LeaderboardEntryResponse(
                         p.getUserName(),
-                        p.getScore() != null ? p.getScore().intValue() : 0
-                ))
-                .collect(Collectors.toList());
+                        p.getScore() != null ? p.getScore().intValue() : 0))
+                .toList();
     }
 }

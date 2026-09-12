@@ -1,9 +1,10 @@
 package com.example.balloon.controller;
 
+import com.example.balloon.model.dto.game.LeaderboardEntryResponse;
 import com.example.balloon.model.dto.minigame.FinishMiniGameRequest;
-import com.example.balloon.model.dto.minigame.MiniGameLeaderboardEntry;
 import com.example.balloon.model.dto.minigame.StartMiniGameResponse;
 import com.example.balloon.service.MiniGameService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class MiniGameController {
     }
 
     @GetMapping("/leaderboard")
-    public List<MiniGameLeaderboardEntry> leaderboard() {
-        return miniGameService.getLeaderboard();
+    public ResponseEntity<List<LeaderboardEntryResponse>> leaderboard() {
+        return ResponseEntity.ok(miniGameService.getLeaderboard());
     }
 }

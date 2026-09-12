@@ -1,4 +1,4 @@
-package com.example.balloon.model.dto.user.response;
+package com.example.balloon.model.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

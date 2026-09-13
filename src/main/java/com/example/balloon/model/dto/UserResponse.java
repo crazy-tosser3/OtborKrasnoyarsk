@@ -1,6 +1,6 @@
 package com.example.balloon.model.dto;
 
-import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserResponse {
     private Long id;
-
-    @Column(name = "user_name", unique = true, nullable = false)
+    @JsonProperty("user_name")
     private String userName;
-
-    @Column(name = "user_email", unique = true, nullable = false)
+    @JsonProperty("user_email")
     private String userEmail;
-
-    @Column(name = "user_role")
+    @JsonProperty("user_role")
     private String userRole;
 }

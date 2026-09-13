@@ -14,6 +14,7 @@ import java.util.*;
 @Service
 @Slf4j
 public class JwtService {
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -27,6 +28,8 @@ public class JwtService {
     public String generateToken(UserEntity userEntity) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", userEntity.getUserRole());
+        // Go-версия клала имя пользователя в claim "username" — оставляем оба варианта
+        claims.put("username", userEntity.getUserName());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -37,31 +40,31 @@ public class JwtService {
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
+    private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+    }
+
+    public String getUsernameFromToken(String token) {
+        Claims claims = parseClaims(token);
+
+        String subject = claims.getSubject();
+        if (subject != null && !subject.isBlank()) {
+            return subject;
+        }
+        return claims.get("username", String.class);
     }
 
     public String getRoleFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.get("role", String.class);
+        return parseClaims(token).get("role", String.class);
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token);
+            parseClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             log.error("JWT токен не валиден: {}", e.getMessage());

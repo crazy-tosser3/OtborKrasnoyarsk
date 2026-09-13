@@ -1,13 +1,14 @@
 package com.example.balloon.service;
 
+import com.example.balloon.exception.NotFoundException;
 import com.example.balloon.model.dto.ActiveTournamentResponse;
+import com.example.balloon.model.dto.GameHistoryResponse;
 import com.example.balloon.model.dto.LeaderboardEntryResponse;
-import com.example.balloon.model.dto.MiniGameLeaderboardProjection;
 import com.example.balloon.model.dto.TournamentResponse;
 import com.example.balloon.model.mapper.EntityMapper;
 import com.example.balloon.repository.GameHistoryRepository;
-import com.example.balloon.repository.MiniGameSessionRepository;
 import com.example.balloon.repository.TournamentRepository;
+import com.example.balloon.repository.redis.TournamentRedisRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,31 +16,57 @@ import java.util.List;
 
 @Service
 public class TournamentService {
+
+    /** Размер лидерборда турнира. */
+    private static final long LEADERBOARD_LIMIT = 100;
+
     private final TournamentRepository tournamentRepository;
     private final GameHistoryRepository gameHistoryRepository;
-    private final MiniGameSessionRepository miniGameSessionRepository;
+    private final TournamentRedisRepository tournamentRedis;
     private final EntityMapper mapper;
 
-    public TournamentService(TournamentRepository tournamentRepository, GameHistoryRepository gameHistoryRepository, MiniGameSessionRepository miniGameSessionRepository, EntityMapper mapper) {
+    public TournamentService(TournamentRepository tournamentRepository,
+                             GameHistoryRepository gameHistoryRepository,
+                             TournamentRedisRepository tournamentRedis,
+                             EntityMapper mapper) {
         this.tournamentRepository = tournamentRepository;
         this.gameHistoryRepository = gameHistoryRepository;
-        this.miniGameSessionRepository = miniGameSessionRepository;
+        this.tournamentRedis = tournamentRedis;
         this.mapper = mapper;
     }
 
-    @Transactional(readOnly = true)
+    /**
+     * Активный турнир лежит в Redis. Как и в Go-версии, отдаём массив:
+     * либо с единственным турниром, либо пустой.
+     */
     public List<ActiveTournamentResponse> getActiveTournaments() {
-        return mapper.toActiveTournamentResponseList(tournamentRepository.findAll());
+        return tournamentRedis.getActiveTournament()
+                .map(List::of)
+                .orElseGet(List::of);
     }
 
+    /** Единственный активный турнир; 404, если турнира нет. */
+    public ActiveTournamentResponse getActiveTournament() {
+        return tournamentRedis.getActiveTournament()
+                .orElseThrow(() -> new NotFoundException("no active tournament"));
+    }
+
+    /** Архив завершённых турниров из Postgres. */
     @Transactional(readOnly = true)
     public List<TournamentResponse> getLatestTournaments() {
-        return mapper.toTournamentResponse(tournamentRepository.findAll());
+        return mapper.toTournamentResponse(tournamentRepository.findAllByOrderByEndedAtDesc());
     }
 
+    /** Топ игроков активного турнира из ZSET Redis. */
+    public List<LeaderboardEntryResponse> getLeaderboard() {
+        ActiveTournamentResponse tournament = getActiveTournament();
+        return tournamentRedis.getTournamentTop(tournament.getId(), LEADERBOARD_LIMIT);
+    }
+
+    /** Глобальная история всех игр, новые сверху. */
     @Transactional(readOnly = true)
-    public List<MiniGameLeaderboardProjection> getLeaderboard() {
-        return miniGameSessionRepository.findLeaderboard();
+    public List<GameHistoryResponse> getGlobalHistory() {
+        return mapper.toGameHistoryResponseList(gameHistoryRepository.findAllByOrderByPlayedAtDesc());
     }
 
     @Transactional

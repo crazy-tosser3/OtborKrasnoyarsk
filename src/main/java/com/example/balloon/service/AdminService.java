@@ -1,33 +1,45 @@
 package com.example.balloon.service;
 
+import com.example.balloon.exception.BadRequestException;
 import com.example.balloon.exception.NotFoundException;
 import com.example.balloon.model.dto.*;
 import com.example.balloon.model.entity.RewardEntity;
-import com.example.balloon.model.entity.TournamentEntity;
 import com.example.balloon.model.entity.UserEntity;
 import com.example.balloon.model.mapper.EntityMapper;
 import com.example.balloon.repository.GameHistoryRepository;
 import com.example.balloon.repository.RewardRepository;
 import com.example.balloon.repository.TournamentRepository;
 import com.example.balloon.repository.UserRepository;
+import com.example.balloon.repository.redis.TournamentRedisRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdminService {
+
     private final UserRepository userRepository;
     private final TournamentRepository tournamentRepository;
     private final RewardRepository rewardRepository;
     private final GameHistoryRepository gameHistoryRepository;
+    private final TournamentRedisRepository tournamentRedis;
     private final EntityMapper mapper;
 
-    public AdminService(UserRepository userRepository, TournamentRepository tournamentRepository, RewardRepository rewardRepository, GameHistoryRepository gameHistoryRepository, EntityMapper mapper) {
+    public AdminService(UserRepository userRepository,
+                        TournamentRepository tournamentRepository,
+                        RewardRepository rewardRepository,
+                        GameHistoryRepository gameHistoryRepository,
+                        TournamentRedisRepository tournamentRedis,
+                        EntityMapper mapper) {
         this.userRepository = userRepository;
         this.tournamentRepository = tournamentRepository;
         this.rewardRepository = rewardRepository;
         this.gameHistoryRepository = gameHistoryRepository;
+        this.tournamentRedis = tournamentRedis;
         this.mapper = mapper;
     }
 
@@ -59,26 +71,56 @@ public class AdminService {
         return "user deleted";
     }
 
-    @Transactional(readOnly = true)
+    /** Активный турнир (из Redis) — тот же список, что отдаёт публичный /api/tournament. */
     public List<ActiveTournamentResponse> getTournaments() {
-        return mapper.toActiveTournamentResponseList(tournamentRepository.findAll());
+        return tournamentRedis.getActiveTournament()
+                .map(List::of)
+                .orElseGet(List::of);
     }
 
-    @Transactional
+    /**
+     * Создание турнира: активный турнир пишется в Redis под ключ tournament:active.
+     * Идентификатором, как и в Go-версии, служит имя турнира.
+     */
     public ActiveTournamentResponse createTournament(CreateTournamentRequest request) {
-        TournamentEntity newTournament = new TournamentEntity();
-        newTournament.setName(request.getName());
-        newTournament.setStartedAt(request.getStartedAt());
-        newTournament.setEndedAt(request.getEndsAt());
-        TournamentEntity saved = tournamentRepository.save(newTournament);
-        return mapper.toActiveTournamentResponse(saved);
+        if (request.getName() == null || request.getName().isBlank()) {
+            throw new BadRequestException("tournament name is required");
+        }
+
+        Instant startedAt = request.getStartedAt() != null
+                ? request.getStartedAt()
+                : Instant.now();
+        Instant endsAt = request.getEndsAt() != null
+                ? request.getEndsAt()
+                : startedAt.plus(1, ChronoUnit.DAYS);
+
+        ActiveTournamentResponse tournament = new ActiveTournamentResponse(
+                request.getName(),
+                request.getName(),
+                startedAt,
+                endsAt
+        );
+
+        tournamentRedis.setActiveTournament(tournament);
+        return tournament;
     }
 
+    /**
+     * Удаление турнира: если id совпадает с активным — чистим Redis
+     * (сам турнир и его лидерборд), иначе удаляем запись из архива.
+     */
     @Transactional
     public String deleteTournament(String id) {
-        TournamentEntity tournamentEntity = tournamentRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("tournament not found"));
-        tournamentRepository.delete(tournamentEntity);
+        Optional<ActiveTournamentResponse> active = tournamentRedis.getActiveTournament();
+
+        if (active.isPresent() && active.get().getId().equals(id)) {
+            tournamentRedis.deleteActiveTournament();
+            tournamentRedis.deleteLeaderboard(id);
+            return "tournament deleted";
+        }
+
+        tournamentRepository.delete(tournamentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("tournament not found")));
         return "tournament deleted";
     }
 
@@ -86,18 +128,19 @@ public class AdminService {
     public RewardResponse createReward(RewardRequest request) {
         RewardEntity newReward = new RewardEntity();
         newReward.setName(request.getName());
-        newReward.setClaimed(request.getClaimed());
+        newReward.setClaimed(request.getClaimed() != null && request.getClaimed());
         newReward.setUserName(request.getUserName());
         return mapper.toRewardResponse(rewardRepository.save(newReward));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<RewardResponse> getRewards() {
         return mapper.toRewardResponseList(rewardRepository.findAll());
     }
 
-    @Transactional
+    /** История игр, новые сверху — как ORDER BY played_at DESC в Go-версии. */
+    @Transactional(readOnly = true)
     public List<GameHistoryResponse> getGames() {
-        return mapper.toGameHistoryResponseList(gameHistoryRepository.findAll());
+        return mapper.toGameHistoryResponseList(gameHistoryRepository.findAllByOrderByPlayedAtDesc());
     }
 }

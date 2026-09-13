@@ -1,5 +1,6 @@
 package com.example.balloon.service;
 
+import com.example.balloon.exception.BadRequestException;
 import com.example.balloon.exception.NotFoundException;
 import com.example.balloon.model.dto.ClaimRewardRequest;
 import com.example.balloon.model.dto.RewardResponse;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Service
 public class RewardService {
+
     private final RewardRepository rewardRepository;
     private final EntityMapper mapper;
 
@@ -25,6 +27,11 @@ public class RewardService {
     public RewardResponse claimReward(ClaimRewardRequest req) {
         RewardEntity reward = rewardRepository.findById(req.getRewardId())
                 .orElseThrow(() -> new NotFoundException("reward not found"));
+
+        if (Boolean.TRUE.equals(reward.getClaimed())) {
+            throw new BadRequestException("reward already claimed");
+        }
+
         reward.setClaimed(true);
         return mapper.toRewardResponse(rewardRepository.save(reward));
     }

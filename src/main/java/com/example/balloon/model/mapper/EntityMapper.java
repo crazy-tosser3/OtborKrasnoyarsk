@@ -66,7 +66,8 @@ public class EntityMapper {
                 entity.getId(),
                 entity.getUserName(),
                 entity.getScore(),
-                entity.getPlayedAt()
+                entity.getPlayedAt(),
+                entity.getIsSuccess()
         );
     }
 

@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/update", "/api/user/delete", "/api/user/profile/**").permitAll()
                         .requestMatchers("/api/games/**", "/api/tournament/**", "/api/rewards/**").permitAll()
                         .requestMatchers("/api/minigame/leaderboard").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger/**").permitAll()
                         .requestMatchers("/api/minigame/start", "/api/minigame/finish").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()

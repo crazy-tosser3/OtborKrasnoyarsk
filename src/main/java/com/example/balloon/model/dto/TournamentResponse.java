@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
@@ -13,12 +13,9 @@ import java.time.LocalDateTime;
 public class TournamentResponse {
     private String id;
     private String name;
-
     @JsonProperty("started_at")
-    private LocalDateTime startedAt;
-
+    private Instant startedAt;
     @JsonProperty("ended_at")
-    private LocalDateTime endedAt;
-
+    private Instant endedAt;
     private String winner;
 }

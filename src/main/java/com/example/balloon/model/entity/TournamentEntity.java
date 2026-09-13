@@ -3,9 +3,8 @@ package com.example.balloon.model.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "tournaments")
@@ -22,12 +21,11 @@ public class TournamentEntity {
     @Column(name = "name")
     private String name;
 
-    @CreationTimestamp
-    @Column(name = "started_at", updatable = false)
-    private LocalDateTime startedAt;
+    @Column(name = "started_at")
+    private Instant startedAt;
 
     @Column(name = "ended_at")
-    private LocalDateTime endedAt;
+    private Instant endedAt;
 
     @Column(name = "winner")
     private String winner;

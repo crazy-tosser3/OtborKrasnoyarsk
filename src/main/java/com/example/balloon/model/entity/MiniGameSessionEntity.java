@@ -3,7 +3,6 @@ package com.example.balloon.model.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "mini_game_sessions")
@@ -23,8 +22,7 @@ public class MiniGameSessionEntity {
     @Column(name = "score")
     private Integer score;
 
-    @CreationTimestamp
-    @Column(name = "started_at", updatable = false)
+    @Column(name = "started_at")
     private String startedAt;
 
     @Column(name = "finished")

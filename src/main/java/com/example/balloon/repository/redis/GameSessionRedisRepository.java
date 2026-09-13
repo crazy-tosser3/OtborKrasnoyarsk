@@ -11,14 +11,14 @@ import java.time.Duration;
 import java.util.Optional;
 
 /**
- * Активные сессии мини-игры хранятся в Redis с TTL 30 минут:
+ * Активные сессии мини-игры хранятся в Redis с TTL 10 минут:
  *   session:{id} -> JSON сессии (вместе с секретом для проверки хеша)
  */
 @Repository
 @Slf4j
 public class GameSessionRedisRepository {
 
-    private static final Duration TTL = Duration.ofMinutes(30);
+    private static final Duration TTL = Duration.ofMinutes(10);
 
     private final StringRedisTemplate redis;
     private final ObjectMapper objectMapper;

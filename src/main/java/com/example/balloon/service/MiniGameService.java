@@ -21,21 +21,14 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @Slf4j
 public class MiniGameService {
-
-    /** Длительность раунда, секунды. */
-    private static final int GAME_DURATION_SECONDS = 30;
-    /** Минимальная правдоподобная длительность раунда, секунды. */
-    private static final long MIN_PLAY_SECONDS = 5;
-    /** Каждая N-я награда игрока даёт бонусные очки. */
-    private static final long BONUS_EVERY = 4;
-    private static final int BONUS_SCORE = 500;
-    private static final String REWARD_NAME = "Супер награда";
 
     private final MiniGameSessionRepository sessionRepository;
     private final GameHistoryRepository gameHistoryRepository;
@@ -43,31 +36,53 @@ public class MiniGameService {
     private final GameSessionRedisRepository sessionRedis;
     private final TournamentRedisRepository tournamentRedis;
     private final GameHashService gameHashService;
+    private final GameConfigService gameConfigService;
 
     public MiniGameService(MiniGameSessionRepository sessionRepository,
                            GameHistoryRepository gameHistoryRepository,
                            RewardRepository rewardRepository,
                            GameSessionRedisRepository sessionRedis,
                            TournamentRedisRepository tournamentRedis,
-                           GameHashService gameHashService) {
+                           GameHashService gameHashService,
+                           GameConfigService gameConfigService) {
         this.sessionRepository = sessionRepository;
         this.gameHistoryRepository = gameHistoryRepository;
         this.rewardRepository = rewardRepository;
         this.sessionRedis = sessionRedis;
         this.tournamentRedis = tournamentRedis;
         this.gameHashService = gameHashService;
+        this.gameConfigService = gameConfigService;
     }
 
     private static String nowRfc3339() {
         return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
     }
 
+    /** Начало текущих суток по UTC — от него считаются игры за день. */
+    private static String startOfTodayUtc() {
+        return Instant.now().truncatedTo(ChronoUnit.DAYS).toString();
+    }
+
     /**
-     * Старт раунда. Сессия с секретом кладётся в Redis (TTL 30 минут),
-     * параллельно пишется строка в mini_game_sessions — по ней строится лидерборд мини-игры.
+     * Старт раунда. Проверяет лимиты из конфига (повторная игра, игр в день),
+     * кладёт сессию с секретом в Redis (TTL 10 минут) и строку в mini_game_sessions.
      */
     @Transactional
     public StartMiniGameResponse start(String userName) {
+        GameConfig cfg = gameConfigService.get();
+
+        if (!cfg.isAllowReplay() || cfg.getMaxGamesPerDay() > 0) {
+            long playedToday = gameHistoryRepository
+                    .countByUserNameAndPlayedAtGreaterThanEqual(userName, startOfTodayUtc());
+
+            if (!cfg.isAllowReplay() && playedToday > 0) {
+                throw new ForbiddenException("replay is disabled, you already played today");
+            }
+            if (cfg.getMaxGamesPerDay() > 0 && playedToday >= cfg.getMaxGamesPerDay()) {
+                throw new ForbiddenException("daily games limit reached");
+            }
+        }
+
         String serverSeed = UUID.randomUUID().toString();
         String secret = UUID.randomUUID().toString();
 
@@ -89,15 +104,18 @@ public class MiniGameService {
                 secret
         ));
 
-        return new StartMiniGameResponse(sessionId, GAME_DURATION_SECONDS, secret);
+        return new StartMiniGameResponse(sessionId, cfg.getGameDuration(), secret);
     }
 
     /**
-     * Завершение раунда: проверка хеша и длительности, запись истории,
-     * начисление очков в лидерборд турнира, выдача награды и бонуса за каждую 4-ю награду.
+     * Завершение раунда: проверка хеша и длительности, пересчёт очков по конфигу
+     * (множитель и потолок), запись истории, начисление в лидерборд турнира,
+     * награда и бонус с шансами из конфига.
      */
     @Transactional
     public FinishMiniGameResponse finish(FinishMiniGameRequest req) {
+        GameConfig cfg = gameConfigService.get();
+
         ActiveGameSessionDTO session = sessionRedis.find(req.getSessionId())
                 .orElseThrow(() -> new NotFoundException("session not found"));
 
@@ -109,54 +127,70 @@ public class MiniGameService {
         }
 
         long duration = Instant.now().getEpochSecond() - session.getStartedAt();
-        if (duration < MIN_PLAY_SECONDS) {
+        if (duration < cfg.getMinPlayTime()) {
             throw new BadRequestException("suspicious result");
         }
+
+        int calculatedScore = score;
+        if (cfg.getScoreMultiplier() > 0) {
+            calculatedScore = (int) (calculatedScore * cfg.getScoreMultiplier());
+        }
+        if (cfg.getMaxScore() > 0 && calculatedScore > cfg.getMaxScore()) {
+            calculatedScore = cfg.getMaxScore();
+        }
+        int finalScore = calculatedScore;
 
         String userName = session.getUserName();
 
         GameHistoryEntity history = new GameHistoryEntity();
         history.setUserName(userName);
-        history.setScore(score);
+        history.setScore(finalScore);
         history.setPlayedAt(nowRfc3339());
         history.setIsSuccess(true);
         gameHistoryRepository.save(history);
 
         sessionRepository.findById(req.getSessionId()).ifPresent(entity -> {
-            entity.setScore(score);
+            entity.setScore(finalScore);
             entity.setFinished(true);
             sessionRepository.save(entity);
         });
 
-        addScoreToActiveTournament(userName, score);
+        addScoreToActiveTournament(userName, finalScore);
 
         sessionRedis.delete(req.getSessionId());
 
-        RewardEntity reward = new RewardEntity();
-        reward.setName(REWARD_NAME);
-        reward.setClaimed(false);
-        reward.setUserName(userName);
-        rewardRepository.save(reward);
+        boolean rewardCreated = false;
+        if (cfg.isEnableRewards() && ThreadLocalRandom.current().nextDouble() < cfg.getRewardChance()) {
+            RewardEntity reward = new RewardEntity();
+            reward.setName(cfg.getRewardName());
+            reward.setClaimed(false);
+            reward.setUserName(userName);
+            rewardRepository.save(reward);
+            rewardCreated = true;
+        }
 
-        long rewardsCount = rewardRepository.countByUserName(userName);
         boolean bonusGranted = false;
+        if (cfg.isEnableBonuses() && cfg.getBonusEvery() > 0) {
+            long rewardsCount = rewardRepository.countByUserName(userName);
+            boolean bonusMilestone = rewardsCount > 0 && rewardsCount % cfg.getBonusEvery() == 0;
 
-        if (rewardsCount > 0 && rewardsCount % BONUS_EVERY == 0) {
-            GameHistoryEntity bonusHistory = new GameHistoryEntity();
-            bonusHistory.setUserName(userName);
-            bonusHistory.setScore(BONUS_SCORE);
-            bonusHistory.setPlayedAt(nowRfc3339());
-            bonusHistory.setIsSuccess(true);
-            gameHistoryRepository.save(bonusHistory);
+            if (bonusMilestone && ThreadLocalRandom.current().nextDouble() < cfg.getBonusRewardChance()) {
+                GameHistoryEntity bonusHistory = new GameHistoryEntity();
+                bonusHistory.setUserName(userName);
+                bonusHistory.setScore(cfg.getBonusScore());
+                bonusHistory.setPlayedAt(nowRfc3339());
+                bonusHistory.setIsSuccess(true);
+                gameHistoryRepository.save(bonusHistory);
 
-            addScoreToActiveTournament(userName, BONUS_SCORE);
-            bonusGranted = true;
+                addScoreToActiveTournament(userName, cfg.getBonusScore());
+                bonusGranted = true;
+            }
         }
 
         return new FinishMiniGameResponse(
                 "game finished",
-                score,
-                true,
+                finalScore,
+                rewardCreated,
                 bonusGranted,
                 req.getSessionId()
         );
@@ -172,8 +206,9 @@ public class MiniGameService {
         }
     }
 
+    /** Лучший результат каждого игрока по истории успешных игр, до 100 записей. */
     @Transactional(readOnly = true)
     public List<MiniGameLeaderboardProjection> getLeaderboard() {
-        return sessionRepository.findLeaderboard();
+        return gameHistoryRepository.findLeaderboard();
     }
 }

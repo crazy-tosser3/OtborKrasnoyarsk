@@ -3,7 +3,6 @@ package com.example.balloon.service;
 import com.example.balloon.exception.*;
 import com.example.balloon.model.dto.*;
 import com.example.balloon.model.entity.UserEntity;
-import com.example.balloon.model.enums.RoleEnum;
 import com.example.balloon.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +45,7 @@ public class UserService {
         user.setUserEmail(request.getUserEmail());
         user.setPasswordHash(passwordService.hashPassword(request.getUserPassword(), salt));
         user.setSalt(passwordService.encodeSalt(salt));
-        user.setUserRole(RoleEnum.USER);
+        user.setUserRole("user");
 
         userRepository.save(user);
         return "user registered";
@@ -108,7 +107,7 @@ public class UserService {
     }
 
     @Transactional
-    public void changeRole(String userName, RoleEnum newRole) {
+    public void changeRole(String userName, String newRole) {
         UserEntity user = getUserByUserName(userName);
         user.setUserRole(newRole);
         userRepository.save(user);

@@ -29,4 +29,7 @@ public class MiniGameSessionEntity {
 
     @Column(name = "finished")
     private Boolean finished;
+
+    @Column(name = "server_seed")
+    private String serverSeed;
 }

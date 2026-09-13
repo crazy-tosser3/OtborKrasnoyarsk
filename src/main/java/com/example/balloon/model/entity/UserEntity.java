@@ -1,6 +1,5 @@
 package com.example.balloon.model.entity;
 
-import com.example.balloon.model.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,9 +20,8 @@ public class UserEntity {
     @Column(name = "user_email", unique = true, nullable = false)
     private String userEmail;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
-    private RoleEnum userRole;
+    private String userRole;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;

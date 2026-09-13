@@ -1,7 +1,6 @@
 package com.example.balloon.config;
 
 import com.example.balloon.model.entity.UserEntity;
-import com.example.balloon.model.enums.RoleEnum;
 import com.example.balloon.repository.UserRepository;
 import com.example.balloon.service.PasswordService;
 import org.springframework.boot.CommandLineRunner;
@@ -26,7 +25,7 @@ public class DataSeeder implements CommandLineRunner {
             UserEntity admin = new UserEntity();
             admin.setUserName("admin");
             admin.setUserEmail("admin@localhost");
-            admin.setUserRole(RoleEnum.ADMIN);
+            admin.setUserRole("admin");
             admin.setPasswordHash(passwordService.hashPassword("admin123", salt));
             admin.setSalt(passwordService.encodeSalt(salt));
 

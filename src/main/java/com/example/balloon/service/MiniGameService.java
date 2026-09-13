@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MiniGameService {
@@ -33,10 +34,11 @@ public class MiniGameService {
         session.setScore(0);
         session.setStartedAt(ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT));
         session.setFinished(false);
+        session.setServerSeed(UUID.randomUUID().toString());
 
         sessionRepository.save(session);
 
-        return new StartMiniGameResponse(session.getId(), 30);
+        return new StartMiniGameResponse(session.getId(), 30, UUID.randomUUID().toString());
     }
 
     @Transactional

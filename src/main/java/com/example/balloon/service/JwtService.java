@@ -1,7 +1,6 @@
 package com.example.balloon.service;
 
 import com.example.balloon.model.entity.UserEntity;
-import com.example.balloon.model.enums.RoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,7 @@ public class JwtService {
 
     public String generateToken(UserEntity userEntity) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", userEntity.getUserRole().name());
+        claims.put("role", userEntity.getUserRole());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -47,14 +46,14 @@ public class JwtService {
                 .getSubject();
     }
 
-    public RoleEnum getRoleFromToken(String token) {
+    public String getRoleFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        return RoleEnum.valueOf(claims.get("role", String.class));
+        return claims.get("role", String.class);
     }
 
     public boolean validateToken(String token) {

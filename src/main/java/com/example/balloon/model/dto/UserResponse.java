@@ -1,6 +1,5 @@
 package com.example.balloon.model.dto;
 
-import com.example.balloon.model.enums.RoleEnum;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,5 +18,5 @@ public class UserResponse {
     private String userEmail;
 
     @Column(name = "user_role")
-    private RoleEnum userRole;
+    private String userRole;
 }

@@ -11,4 +11,6 @@ public class StartMiniGameResponse {
     private String sessionId;
 
     private Integer duration;
+
+    private String secret;
 }

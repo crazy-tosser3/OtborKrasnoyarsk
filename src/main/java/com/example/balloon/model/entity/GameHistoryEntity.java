@@ -23,4 +23,7 @@ public class GameHistoryEntity {
 
     @Column(name = "played_at")
     private String playedAt;
+
+    @Column(name = "is_success")
+    private Boolean isSuccess;
 }

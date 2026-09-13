@@ -1,6 +1,5 @@
 package com.example.balloon.config;
 
-import com.example.balloon.model.enums.RoleEnum;
 import com.example.balloon.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,11 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && jwtService.validateToken(token)) {
             try {
                 String username = jwtService.getUsernameFromToken(token);
-                RoleEnum role = jwtService.getRoleFromToken(token);
+                String role = jwtService.getRoleFromToken(token);
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     List<SimpleGrantedAuthority> authorities =
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role));
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);

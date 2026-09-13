@@ -1,7 +1,7 @@
 package com.example.balloon.service;
 
 import com.example.balloon.exception.*;
-import com.example.balloon.model.dto.*;
+import com.example.balloon.model.dto.user.*;
 import com.example.balloon.model.entity.UserEntity;
 import com.example.balloon.repository.UserRepository;
 import org.springframework.stereotype.Service;

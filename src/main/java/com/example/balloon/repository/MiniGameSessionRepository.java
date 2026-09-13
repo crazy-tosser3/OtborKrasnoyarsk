@@ -1,6 +1,6 @@
 package com.example.balloon.repository;
 
-import com.example.balloon.model.dto.MiniGameLeaderboardProjection;
+import com.example.balloon.model.dto.leaderboard.MiniGameLeaderboardProjection;
 import com.example.balloon.model.entity.MiniGameSessionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

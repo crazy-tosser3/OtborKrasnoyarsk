@@ -1,7 +1,7 @@
 package com.example.balloon.repository.redis;
 
-import com.example.balloon.model.dto.ActiveTournamentResponse;
-import com.example.balloon.model.dto.LeaderboardEntryResponse;
+import com.example.balloon.model.dto.tournament.ActiveTournamentResponse;
+import com.example.balloon.model.dto.leaderboard.LeaderboardEntryResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

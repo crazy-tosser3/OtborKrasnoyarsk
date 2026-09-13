@@ -1,7 +1,10 @@
 package com.example.balloon.controller;
 
 import com.example.balloon.exception.UnauthorizedException;
-import com.example.balloon.model.dto.*;
+import com.example.balloon.model.dto.game.FinishMiniGameRequest;
+import com.example.balloon.model.dto.game.FinishMiniGameResponse;
+import com.example.balloon.model.dto.leaderboard.MiniGameLeaderboardProjection;
+import com.example.balloon.model.dto.game.StartMiniGameResponse;
 import com.example.balloon.service.MiniGameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

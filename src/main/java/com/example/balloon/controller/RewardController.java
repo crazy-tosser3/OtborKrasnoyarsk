@@ -1,7 +1,7 @@
 package com.example.balloon.controller;
 
-import com.example.balloon.model.dto.ClaimRewardRequest;
-import com.example.balloon.model.dto.RewardResponse;
+import com.example.balloon.model.dto.reward.ClaimRewardRequest;
+import com.example.balloon.model.dto.reward.RewardResponse;
 import com.example.balloon.service.RewardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

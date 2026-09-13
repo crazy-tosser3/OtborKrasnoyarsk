@@ -1,10 +1,10 @@
-package com.example.balloon.model.dto;
+package com.example.balloon.model.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class UserDeleteRequest {
+public class UserLoginRequest {
     @JsonProperty("user_name")
     private String userName;
 

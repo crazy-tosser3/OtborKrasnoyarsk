@@ -1,4 +1,4 @@
-package com.example.balloon.model.dto;
+package com.example.balloon.model.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

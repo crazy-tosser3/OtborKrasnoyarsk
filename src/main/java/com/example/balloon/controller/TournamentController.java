@@ -1,9 +1,9 @@
 package com.example.balloon.controller;
 
-import com.example.balloon.model.dto.ActiveTournamentResponse;
-import com.example.balloon.model.dto.GameHistoryResponse;
-import com.example.balloon.model.dto.LeaderboardEntryResponse;
-import com.example.balloon.model.dto.TournamentResponse;
+import com.example.balloon.model.dto.tournament.ActiveTournamentResponse;
+import com.example.balloon.model.dto.game.GameHistoryResponse;
+import com.example.balloon.model.dto.leaderboard.LeaderboardEntryResponse;
+import com.example.balloon.model.dto.tournament.TournamentResponse;
 import com.example.balloon.service.TournamentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

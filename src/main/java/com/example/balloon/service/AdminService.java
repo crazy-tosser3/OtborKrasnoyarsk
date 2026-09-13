@@ -2,8 +2,15 @@ package com.example.balloon.service;
 
 import com.example.balloon.exception.BadRequestException;
 import com.example.balloon.exception.NotFoundException;
-import com.example.balloon.model.dto.*;
+import com.example.balloon.model.dto.game.GameHistoryResponse;
+import com.example.balloon.model.dto.reward.RewardRequest;
+import com.example.balloon.model.dto.reward.RewardResponse;
+import com.example.balloon.model.dto.tournament.ActiveTournamentResponse;
+import com.example.balloon.model.dto.tournament.CreateTournamentRequest;
+import com.example.balloon.model.dto.user.ChangeRoleRequest;
+import com.example.balloon.model.dto.user.UserResponse;
 import com.example.balloon.model.entity.RewardEntity;
+import com.example.balloon.model.entity.TournamentEntity;
 import com.example.balloon.model.entity.UserEntity;
 import com.example.balloon.model.mapper.EntityMapper;
 import com.example.balloon.repository.GameHistoryRepository;
@@ -108,7 +115,13 @@ public class AdminService {
                 endsAt
         );
 
+        TournamentEntity entity = new TournamentEntity();
+        entity.setName(request.getName());
+        entity.setStartedAt(startedAt);
+        entity.setEndedAt(endsAt);
+
         tournamentRedis.setActiveTournament(tournament);
+        tournamentRepository.save(entity);
         return tournament;
     }
 

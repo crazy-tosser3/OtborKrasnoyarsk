@@ -1,10 +1,10 @@
 package com.example.balloon.service;
 
 import com.example.balloon.exception.NotFoundException;
-import com.example.balloon.model.dto.ActiveTournamentResponse;
-import com.example.balloon.model.dto.GameHistoryResponse;
-import com.example.balloon.model.dto.LeaderboardEntryResponse;
-import com.example.balloon.model.dto.TournamentResponse;
+import com.example.balloon.model.dto.tournament.ActiveTournamentResponse;
+import com.example.balloon.model.dto.game.GameHistoryResponse;
+import com.example.balloon.model.dto.leaderboard.LeaderboardEntryResponse;
+import com.example.balloon.model.dto.tournament.TournamentResponse;
 import com.example.balloon.model.mapper.EntityMapper;
 import com.example.balloon.repository.GameHistoryRepository;
 import com.example.balloon.repository.TournamentRepository;
@@ -54,7 +54,7 @@ public class TournamentService {
     /** Архив завершённых турниров из Postgres. */
     @Transactional(readOnly = true)
     public List<TournamentResponse> getLatestTournaments() {
-        return mapper.toTournamentResponse(tournamentRepository.findAllByOrderByEndedAtDesc());
+        return mapper.toTournamentResponse(tournamentRepository.findAll());
     }
 
     /** Топ игроков активного турнира из ZSET Redis. */

@@ -2,8 +2,8 @@ package com.example.balloon.service;
 
 import com.example.balloon.exception.BadRequestException;
 import com.example.balloon.exception.NotFoundException;
-import com.example.balloon.model.dto.ClaimRewardRequest;
-import com.example.balloon.model.dto.RewardResponse;
+import com.example.balloon.model.dto.reward.ClaimRewardRequest;
+import com.example.balloon.model.dto.reward.RewardResponse;
 import com.example.balloon.model.entity.RewardEntity;
 import com.example.balloon.model.mapper.EntityMapper;
 import com.example.balloon.repository.RewardRepository;

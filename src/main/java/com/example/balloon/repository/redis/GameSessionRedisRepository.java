@@ -1,6 +1,6 @@
 package com.example.balloon.repository.redis;
 
-import com.example.balloon.model.dto.ActiveGameSessionDTO;
+import com.example.balloon.model.dto.game.ActiveGameSessionDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

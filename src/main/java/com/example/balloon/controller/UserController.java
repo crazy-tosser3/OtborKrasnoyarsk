@@ -1,6 +1,6 @@
 package com.example.balloon.controller;
 
-import com.example.balloon.model.dto.*;
+import com.example.balloon.model.dto.user.*;
 import com.example.balloon.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

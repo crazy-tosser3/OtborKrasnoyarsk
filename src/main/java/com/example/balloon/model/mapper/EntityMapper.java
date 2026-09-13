@@ -1,6 +1,10 @@
 package com.example.balloon.model.mapper;
 
-import com.example.balloon.model.dto.*;
+import com.example.balloon.model.dto.game.GameHistoryResponse;
+import com.example.balloon.model.dto.reward.RewardResponse;
+import com.example.balloon.model.dto.tournament.ActiveTournamentResponse;
+import com.example.balloon.model.dto.tournament.TournamentResponse;
+import com.example.balloon.model.dto.user.UserResponse;
 import com.example.balloon.model.entity.*;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.example.balloon.model.dto;
+package com.example.balloon.model.dto.tournament;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;

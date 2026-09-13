@@ -1,6 +1,12 @@
 package com.example.balloon.controller;
 
-import com.example.balloon.model.dto.*;
+import com.example.balloon.model.dto.game.GameHistoryResponse;
+import com.example.balloon.model.dto.reward.RewardRequest;
+import com.example.balloon.model.dto.reward.RewardResponse;
+import com.example.balloon.model.dto.tournament.ActiveTournamentResponse;
+import com.example.balloon.model.dto.tournament.CreateTournamentRequest;
+import com.example.balloon.model.dto.user.ChangeRoleRequest;
+import com.example.balloon.model.dto.user.UserResponse;
 import com.example.balloon.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

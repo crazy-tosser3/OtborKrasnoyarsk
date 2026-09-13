@@ -1,4 +1,4 @@
-package com.example.balloon.model.dto;
+package com.example.balloon.model.dto.leaderboard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -63,7 +63,10 @@ public class TournamentWatcher {
             log.warn("Не удалось определить победителя турнира {}: {}", active.getId(), e.getMessage());
         }
 
-        TournamentEntity archived = new TournamentEntity();
+        // турнир уже записан в БД при создании: обновляем эту запись, а не создаём дубль
+        TournamentEntity archived = tournamentRepository
+                .findFirstByNameAndStartedAt(active.getName(), active.getStartedAt())
+                .orElseGet(TournamentEntity::new);
         archived.setName(active.getName());
         archived.setStartedAt(active.getStartedAt());
         archived.setEndedAt(active.getEndsAt());

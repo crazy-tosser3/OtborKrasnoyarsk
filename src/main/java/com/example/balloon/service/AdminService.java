@@ -94,12 +94,13 @@ public class AdminService {
             throw new BadRequestException("tournament name is required");
         }
 
-        Instant startedAt = request.getStartedAt() != null
+        // Postgres хранит время с точностью до микросекунд — иначе запись не найдётся по startedAt
+        Instant startedAt = (request.getStartedAt() != null
                 ? request.getStartedAt()
-                : Instant.now();
-        Instant endsAt = request.getEndsAt() != null
+                : Instant.now()).truncatedTo(ChronoUnit.MICROS);
+        Instant endsAt = (request.getEndsAt() != null
                 ? request.getEndsAt()
-                : startedAt.plus(1, ChronoUnit.DAYS);
+                : startedAt.plus(1, ChronoUnit.DAYS)).truncatedTo(ChronoUnit.MICROS);
 
         if (!endsAt.isAfter(startedAt)) {
             throw new BadRequestException("tournament end time must be after start time");
@@ -134,6 +135,8 @@ public class AdminService {
         Optional<ActiveTournamentResponse> active = tournamentRedis.getActiveTournament();
 
         if (active.isPresent() && active.get().getId().equals(id)) {
+            tournamentRepository.findFirstByNameAndStartedAt(active.get().getName(), active.get().getStartedAt())
+                    .ifPresent(tournamentRepository::delete);
             tournamentRedis.deleteActiveTournament();
             tournamentRedis.deleteLeaderboard(id);
             return "tournament deleted";

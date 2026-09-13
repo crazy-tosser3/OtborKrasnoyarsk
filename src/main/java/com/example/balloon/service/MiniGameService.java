@@ -6,10 +6,8 @@ import com.example.balloon.exception.NotFoundException;
 import com.example.balloon.model.dto.leaderboard.MiniGameLeaderboardProjection;
 import com.example.balloon.model.dto.game.*;
 import com.example.balloon.model.entity.GameHistoryEntity;
-import com.example.balloon.model.entity.MiniGameSessionEntity;
 import com.example.balloon.model.entity.RewardEntity;
 import com.example.balloon.repository.GameHistoryRepository;
-import com.example.balloon.repository.MiniGameSessionRepository;
 import com.example.balloon.repository.RewardRepository;
 import com.example.balloon.repository.redis.GameSessionRedisRepository;
 import com.example.balloon.repository.redis.TournamentRedisRepository;
@@ -30,7 +28,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public class MiniGameService {
 
-    private final MiniGameSessionRepository sessionRepository;
     private final GameHistoryRepository gameHistoryRepository;
     private final RewardRepository rewardRepository;
     private final GameSessionRedisRepository sessionRedis;
@@ -38,14 +35,12 @@ public class MiniGameService {
     private final GameHashService gameHashService;
     private final GameConfigService gameConfigService;
 
-    public MiniGameService(MiniGameSessionRepository sessionRepository,
-                           GameHistoryRepository gameHistoryRepository,
+    public MiniGameService(GameHistoryRepository gameHistoryRepository,
                            RewardRepository rewardRepository,
                            GameSessionRedisRepository sessionRedis,
                            TournamentRedisRepository tournamentRedis,
                            GameHashService gameHashService,
                            GameConfigService gameConfigService) {
-        this.sessionRepository = sessionRepository;
         this.gameHistoryRepository = gameHistoryRepository;
         this.rewardRepository = rewardRepository;
         this.sessionRedis = sessionRedis;
@@ -62,7 +57,7 @@ public class MiniGameService {
         return Instant.now().truncatedTo(ChronoUnit.DAYS).toString();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public StartMiniGameResponse start(String userName) {
         GameConfig cfg = gameConfigService.get();
 
@@ -78,23 +73,13 @@ public class MiniGameService {
             }
         }
 
-        String serverSeed = UUID.randomUUID().toString();
         String secret = UUID.randomUUID().toString();
-
-        MiniGameSessionEntity session = new MiniGameSessionEntity();
-        session.setUserName(userName);
-        session.setScore(0);
-        session.setStartedAt(nowRfc3339());
-        session.setFinished(false);
-        session.setServerSeed(serverSeed);
-
-        String sessionId = sessionRepository.save(session).getId();
+        String sessionId = UUID.randomUUID().toString();
 
         sessionRedis.save(new ActiveGameSessionDTO(
                 sessionId,
                 userName,
                 Instant.now().getEpochSecond(),
-                serverSeed,
                 secret
         ));
 
@@ -120,14 +105,13 @@ public class MiniGameService {
             throw new BadRequestException("suspicious result");
         }
 
-        int calculatedScore = score;
+        int finalScore = score;
         if (cfg.getScoreMultiplier() > 0) {
-            calculatedScore = (int) (calculatedScore * cfg.getScoreMultiplier());
+            finalScore = (int) (finalScore * cfg.getScoreMultiplier());
         }
-        if (cfg.getMaxScore() > 0 && calculatedScore > cfg.getMaxScore()) {
-            calculatedScore = cfg.getMaxScore();
+        if (cfg.getMaxScore() > 0 && finalScore > cfg.getMaxScore()) {
+            finalScore = cfg.getMaxScore();
         }
-        int finalScore = calculatedScore;
 
         String userName = session.getUserName();
 
@@ -137,12 +121,6 @@ public class MiniGameService {
         history.setPlayedAt(nowRfc3339());
         history.setIsSuccess(true);
         gameHistoryRepository.save(history);
-
-        sessionRepository.findById(req.getSessionId()).ifPresent(entity -> {
-            entity.setScore(finalScore);
-            entity.setFinished(true);
-            sessionRepository.save(entity);
-        });
 
         addScoreToActiveTournament(userName, finalScore);
 

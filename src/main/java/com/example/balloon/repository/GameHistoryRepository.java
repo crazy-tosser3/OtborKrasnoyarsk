@@ -12,8 +12,6 @@ import java.util.List;
 public interface GameHistoryRepository extends JpaRepository<GameHistoryEntity, String> {
     List<GameHistoryEntity> findAllByOrderByPlayedAtDesc();
 
-    List<GameHistoryEntity> findByUserNameOrderByPlayedAtDesc(String userName);
-
     long countByUserNameAndPlayedAtGreaterThanEqual(String userName, String playedAt);
 
     @Query(value = """

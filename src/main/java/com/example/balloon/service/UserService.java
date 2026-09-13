@@ -95,24 +95,6 @@ public class UserService {
         return new UserProfileResponse(user.getUserName(), user.getUserEmail());
     }
 
-    @Transactional(readOnly = true)
-    public java.util.List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    public UserEntity getUserByUserName(String userName) {
-        return userRepository.findByUserName(userName)
-                .orElseThrow(() -> new NotFoundException("user not found"));
-    }
-
-    @Transactional
-    public void changeRole(String userName, String newRole) {
-        UserEntity user = getUserByUserName(userName);
-        user.setUserRole(newRole);
-        userRepository.save(user);
-    }
-
     private boolean checkPassword(String rawPassword, UserEntity user) {
         byte[] salt = passwordService.decodeSalt(user.getSalt());
         String hash = passwordService.hashPassword(rawPassword, salt);

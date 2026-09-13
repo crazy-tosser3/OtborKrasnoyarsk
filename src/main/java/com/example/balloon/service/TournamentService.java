@@ -59,9 +59,4 @@ public class TournamentService {
     public List<GameHistoryResponse> getGlobalHistory() {
         return mapper.toGameHistoryResponseList(gameHistoryRepository.findAllByOrderByPlayedAtDesc());
     }
-
-    @Transactional
-    public void delete(String id) {
-        tournamentRepository.deleteById(id);
-    }
 }

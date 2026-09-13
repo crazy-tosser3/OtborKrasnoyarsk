@@ -2,7 +2,6 @@ package com.example.balloon.model.mapper;
 
 import com.example.balloon.model.dto.game.GameHistoryResponse;
 import com.example.balloon.model.dto.reward.RewardResponse;
-import com.example.balloon.model.dto.tournament.ActiveTournamentResponse;
 import com.example.balloon.model.dto.tournament.TournamentResponse;
 import com.example.balloon.model.dto.user.UserResponse;
 import com.example.balloon.model.entity.*;
@@ -24,19 +23,6 @@ public class EntityMapper {
 
     public List<TournamentResponse> toTournamentResponse(List<TournamentEntity> entities) {
         return entities.stream().map(this::toTournamentResponse).toList();
-    }
-
-    public ActiveTournamentResponse toActiveTournamentResponse(TournamentEntity entity) {
-        return new ActiveTournamentResponse(
-                entity.getId(),
-                entity.getName(),
-                entity.getStartedAt(),
-                entity.getEndedAt()
-        );
-    }
-
-    public List<ActiveTournamentResponse> toActiveTournamentResponseList(List<TournamentEntity> entities) {
-        return entities.stream().map(this::toActiveTournamentResponse).toList();
     }
 
     public RewardResponse toRewardResponse(RewardEntity entity) {

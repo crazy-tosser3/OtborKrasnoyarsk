@@ -12,6 +12,5 @@ public class ActiveGameSessionDTO {
     private String id;
     private String userName;
     private long startedAt;
-    private String serverSeed;
     private String secret;
 }

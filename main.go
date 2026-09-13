@@ -11,7 +11,10 @@ import (
 	"Otbor/internal/models"
 	"Otbor/internal/service"
 
+<<<<<<< HEAD
 	"github.com/gin-contrib/cors"
+=======
+>>>>>>> 7c52d81 (Final Commit)
 	"github.com/gin-gonic/gin"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -61,6 +64,7 @@ func main() {
 
 	router := gin.Default()
 
+<<<<<<< HEAD
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
@@ -68,6 +72,15 @@ func main() {
 		ExposeHeaders:    []string{"*"},
 		AllowCredentials: false,
 	}))
+=======
+	// router.Use(cors.New(cors.Config{
+	// 	AllowOrigins:     []string{"*"},
+	// 	AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+	// 	AllowHeaders:     []string{"*"},
+	// 	ExposeHeaders:    []string{"*"},
+	// 	AllowCredentials: false,
+	// }))
+>>>>>>> 7c52d81 (Final Commit)
 
 	router.POST("/api/user/login", service.Login)
 	router.POST("/api/user/register", service.Register)
@@ -118,5 +131,10 @@ func main() {
 	router.GET("/swagger/*any",
 		ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+<<<<<<< HEAD
+=======
+	SetupFrontend(router)
+
+>>>>>>> 7c52d81 (Final Commit)
 	router.Run(":8000")
 }

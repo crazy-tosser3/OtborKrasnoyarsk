@@ -1,18 +1,16 @@
 package com.example.balloon.model.dto.reward;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RewardResponse {
     private String id;
     private String name;
     private Boolean claimed;
-
-    @JsonProperty("user_name")
     private String userName;
 }

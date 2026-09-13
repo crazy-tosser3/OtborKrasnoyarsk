@@ -9,17 +9,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-/**
- * Активный турнир и его лидерборд живут в Redis (как в Go-версии):
- *   tournament:active                   -> JSON активного турнира
- *   tournament:{id}:leaderboard         -> ZSET username -> score
- */
 @Repository
 @Slf4j
 public class TournamentRedisRepository {
@@ -64,12 +55,10 @@ public class TournamentRedisRepository {
         redis.delete(ACTIVE_KEY);
     }
 
-    /** ZINCRBY tournament:{id}:leaderboard score username */
     public void addTournamentScore(String tournamentId, String username, int score) {
         redis.opsForZSet().incrementScore(leaderboardKey(tournamentId), username, score);
     }
 
-    /** ZREVRANGE tournament:{id}:leaderboard 0 limit-1 WITHSCORES */
     public List<LeaderboardEntryResponse> getTournamentTop(String tournamentId, long limit) {
         Set<ZSetOperations.TypedTuple<String>> top =
                 redis.opsForZSet().reverseRangeWithScores(leaderboardKey(tournamentId), 0, limit - 1);

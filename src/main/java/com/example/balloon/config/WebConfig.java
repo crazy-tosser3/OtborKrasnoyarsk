@@ -9,10 +9,6 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 
 import java.io.IOException;
 
-/**
- * Раздаёт собранный фронтенд (frontend/.output/public попадает в jar как static/).
- * Неизвестные пути SPA отдают index.html, а api/ и swagger/ — 404 JSON.
- */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

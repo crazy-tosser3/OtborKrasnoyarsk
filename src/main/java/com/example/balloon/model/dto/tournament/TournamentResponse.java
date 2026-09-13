@@ -1,6 +1,7 @@
 package com.example.balloon.model.dto.tournament;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,12 +11,11 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TournamentResponse {
     private String id;
     private String name;
-    @JsonProperty("started_at")
     private Instant startedAt;
-    @JsonProperty("ended_at")
     private Instant endedAt;
     private String winner;
 }

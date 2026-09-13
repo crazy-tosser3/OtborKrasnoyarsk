@@ -1,17 +1,14 @@
 package com.example.balloon.model.dto.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class UserProfileResponse {
-    @JsonProperty("user_name")
     private String userName;
-
-    @JsonProperty("user_email")
     private String userEmail;
 }

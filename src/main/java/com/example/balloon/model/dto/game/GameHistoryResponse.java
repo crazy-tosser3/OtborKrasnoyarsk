@@ -1,18 +1,17 @@
 package com.example.balloon.model.dto.game;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GameHistoryResponse {
     private String id;
-    @JsonProperty("user_name")
     private String userName;
     private Integer score;
-    @JsonProperty("played_at")
     private String playedAt;
-    @JsonProperty("is_success")
     private Boolean isSuccess;
 }

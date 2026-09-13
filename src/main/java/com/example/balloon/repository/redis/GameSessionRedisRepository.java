@@ -10,10 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.time.Duration;
 import java.util.Optional;
 
-/**
- * Активные сессии мини-игры хранятся в Redis с TTL 10 минут:
- *   session:{id} -> JSON сессии (вместе с секретом для проверки хеша)
- */
 @Repository
 @Slf4j
 public class GameSessionRedisRepository {

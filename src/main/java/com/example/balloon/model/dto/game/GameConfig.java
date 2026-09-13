@@ -1,49 +1,25 @@
 package com.example.balloon.model.dto.game;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 @Data
 @NoArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GameConfig {
-
-    @JsonProperty("game_duration")
     private int gameDuration;
-
-    @JsonProperty("max_score")
     private int maxScore;
-
-    @JsonProperty("min_play_time")
     private int minPlayTime;
-
-    @JsonProperty("reward_name")
     private String rewardName;
-
-    @JsonProperty("bonus_every")
     private int bonusEvery;
-
-    @JsonProperty("bonus_score")
     private int bonusScore;
-
-    @JsonProperty("reward_chance")
     private double rewardChance;
-
-    @JsonProperty("bonus_reward_chance")
     private double bonusRewardChance;
-
-    @JsonProperty("enable_rewards")
     private boolean enableRewards;
-
-    @JsonProperty("enable_bonuses")
     private boolean enableBonuses;
-
-    @JsonProperty("allow_replay")
     private boolean allowReplay;
-
-    @JsonProperty("max_games_per_day")
     private int maxGamesPerDay;
-
-    @JsonProperty("score_multiplier")
     private double scoreMultiplier;
 
     public static GameConfig defaults() {

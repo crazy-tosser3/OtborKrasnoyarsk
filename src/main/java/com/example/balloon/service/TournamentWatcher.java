@@ -8,7 +8,6 @@ import com.example.balloon.repository.redis.TournamentRedisRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -34,7 +33,6 @@ public class TournamentWatcher {
     }
 
     @Scheduled(fixedDelay = 10_000, initialDelay = 10_000)
-    @Transactional
     public void watch() {
         Optional<ActiveTournamentResponse> maybeActive;
         try {
@@ -71,6 +69,7 @@ public class TournamentWatcher {
         archived.setEndedAt(active.getEndsAt());
         archived.setWinner(winner);
 
+        // без внешней транзакции save коммитит сразу: ключи Redis удаляются только после успешной записи в БД
         try {
             tournamentRepository.save(archived);
         } catch (Exception e) {

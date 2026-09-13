@@ -94,6 +94,13 @@ public class AdminService {
                 ? request.getEndsAt()
                 : startedAt.plus(1, ChronoUnit.DAYS);
 
+        if (!endsAt.isAfter(startedAt)) {
+            throw new BadRequestException("tournament end time must be after start time");
+        }
+        if (!endsAt.isAfter(Instant.now())) {
+            throw new BadRequestException("tournament end time must be in the future");
+        }
+
         ActiveTournamentResponse tournament = new ActiveTournamentResponse(
                 request.getName(),
                 request.getName(),

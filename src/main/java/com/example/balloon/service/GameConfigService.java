@@ -21,10 +21,6 @@ public class GameConfigService {
         this.objectMapper = objectMapper;
     }
 
-    /**
-     * Текущий конфиг из Redis. Пока его ни разу не сохраняли — значения по умолчанию;
-     * поля, которых нет в сохранённом JSON, тоже берутся из дефолтов.
-     */
     public GameConfig get() {
         String data = redis.opsForValue().get(REDIS_KEY);
         if (data == null) {
@@ -37,7 +33,6 @@ public class GameConfigService {
         }
     }
 
-    /** Полностью перезаписывает конфиг. */
     public GameConfig update(GameConfig config) {
         validate(config);
         try {

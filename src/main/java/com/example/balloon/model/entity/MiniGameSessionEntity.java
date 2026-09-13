@@ -1,6 +1,5 @@
 package com.example.balloon.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 

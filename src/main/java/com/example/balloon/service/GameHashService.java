@@ -7,10 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 
-/**
- * Проверка подлинности результата мини-игры.
- * Формула повторяет Go-версию: sha256(session_id + score + secret) в hex.
- */
+
 @Service
 public class GameHashService {
 

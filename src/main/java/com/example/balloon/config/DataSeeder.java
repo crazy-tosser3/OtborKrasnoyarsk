@@ -7,10 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-/**
- * Создаёт учётную запись администратора при первом запуске.
- * Как и в Go-версии, проверяется наличие любого пользователя с ролью admin.
- */
 @Component
 @Slf4j
 public class DataSeeder implements CommandLineRunner {

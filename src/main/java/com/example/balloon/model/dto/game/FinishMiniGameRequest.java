@@ -8,6 +8,5 @@ public class FinishMiniGameRequest {
     @JsonProperty("session_id")
     private String sessionId;
     private Integer score;
-    /** sha256(session_id + score + secret) — защита от подделки результата */
     private String hash;
 }

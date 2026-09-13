@@ -1,10 +1,8 @@
 package com.example.balloon.model.dto.game;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-/** Настройки мини-игры, хранятся в Redis под ключом game:config. */
 @Data
 @NoArgsConstructor
 public class GameConfig {
@@ -12,7 +10,6 @@ public class GameConfig {
     @JsonProperty("game_duration")
     private int gameDuration;
 
-    /** 0 — без ограничения */
     @JsonProperty("max_score")
     private int maxScore;
 
@@ -28,7 +25,6 @@ public class GameConfig {
     @JsonProperty("bonus_score")
     private int bonusScore;
 
-    /** шанс награды за раунд: 1.0 — всегда, 0.0 — никогда */
     @JsonProperty("reward_chance")
     private double rewardChance;
 
@@ -44,14 +40,12 @@ public class GameConfig {
     @JsonProperty("allow_replay")
     private boolean allowReplay;
 
-    /** 0 — без ограничения */
     @JsonProperty("max_games_per_day")
     private int maxGamesPerDay;
 
     @JsonProperty("score_multiplier")
     private double scoreMultiplier;
 
-    /** Значения по умолчанию повторяют прежнее захардкоженное поведение игры. */
     public static GameConfig defaults() {
         GameConfig cfg = new GameConfig();
         cfg.setGameDuration(30);

@@ -1,9 +1,7 @@
 package com.example.balloon.model.dto.game;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +13,6 @@ public class GameHistoryResponse {
     private Integer score;
     @JsonProperty("played_at")
     private String playedAt;
-    /** имя поля намеренно совпадает с JSON-тегом Go-версии (`is_succes`) */
-    @JsonProperty("is_succes")
+    @JsonProperty("is_success")
     private Boolean isSuccess;
 }

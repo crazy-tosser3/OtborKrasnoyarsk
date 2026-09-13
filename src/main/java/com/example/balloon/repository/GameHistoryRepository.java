@@ -10,16 +10,12 @@ import java.util.List;
 
 @Repository
 public interface GameHistoryRepository extends JpaRepository<GameHistoryEntity, String> {
-
-    /** История игр, новые сверху (в Go — ORDER BY played_at DESC). */
     List<GameHistoryEntity> findAllByOrderByPlayedAtDesc();
 
     List<GameHistoryEntity> findByUserNameOrderByPlayedAtDesc(String userName);
 
-    /** Сколько игр у пользователя начиная с момента; played_at хранится строкой RFC3339. */
     long countByUserNameAndPlayedAtGreaterThanEqual(String userName, String playedAt);
 
-    /** Лучший результат каждого игрока по успешным играм. */
     @Query(value = """
             SELECT
                 user_name AS userName,

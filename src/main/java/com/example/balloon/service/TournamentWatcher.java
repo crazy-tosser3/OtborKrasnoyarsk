@@ -13,12 +13,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Фоновый наблюдатель за турниром — аналог горутины service.TournamentWatcher из Go.
- * Раз в 10 секунд проверяет, не закончился ли активный турнир; если закончился —
- * определяет победителя по лидерборду, переносит турнир в архив (Postgres)
- * и очищает ключи в Redis.
- */
 @Component
 @Slf4j
 public class TournamentWatcher {
@@ -63,7 +57,6 @@ public class TournamentWatcher {
             log.warn("Не удалось определить победителя турнира {}: {}", active.getId(), e.getMessage());
         }
 
-        // турнир уже записан в БД при создании: обновляем эту запись, а не создаём дубль
         TournamentEntity archived = tournamentRepository
                 .findFirstByNameAndStartedAt(active.getName(), active.getStartedAt())
                 .orElseGet(TournamentEntity::new);
@@ -72,7 +65,6 @@ public class TournamentWatcher {
         archived.setEndedAt(active.getEndsAt());
         archived.setWinner(winner);
 
-        // без внешней транзакции save коммитит сразу: ключи Redis удаляются только после успешной записи в БД
         try {
             tournamentRepository.save(archived);
         } catch (Exception e) {

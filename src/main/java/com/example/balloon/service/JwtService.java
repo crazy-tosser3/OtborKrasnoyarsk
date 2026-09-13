@@ -28,7 +28,6 @@ public class JwtService {
     public String generateToken(UserEntity userEntity) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", userEntity.getUserRole());
-        // Go-версия клала имя пользователя в claim "username" — оставляем оба варианта
         claims.put("username", userEntity.getUserName());
 
         return Jwts.builder()

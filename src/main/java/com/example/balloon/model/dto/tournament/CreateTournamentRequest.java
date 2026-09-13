@@ -14,7 +14,6 @@ public class CreateTournamentRequest {
     @JsonAlias({"started_at"})
     private Instant startedAt;
 
-    /** в Go-версии поле называлось endedAt, оставляем совместимость с обоими вариантами */
     @JsonProperty("endedAt")
     @JsonAlias({"ends_at", "endsAt", "ended_at"})
     private Instant endsAt;

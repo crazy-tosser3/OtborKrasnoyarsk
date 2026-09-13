@@ -58,15 +58,10 @@ public class MiniGameService {
         return ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
     }
 
-    /** Начало текущих суток по UTC — от него считаются игры за день. */
     private static String startOfTodayUtc() {
         return Instant.now().truncatedTo(ChronoUnit.DAYS).toString();
     }
 
-    /**
-     * Старт раунда. Проверяет лимиты из конфига (повторная игра, игр в день),
-     * кладёт сессию с секретом в Redis (TTL 10 минут) и строку в mini_game_sessions.
-     */
     @Transactional
     public StartMiniGameResponse start(String userName) {
         GameConfig cfg = gameConfigService.get();
@@ -86,7 +81,6 @@ public class MiniGameService {
         String serverSeed = UUID.randomUUID().toString();
         String secret = UUID.randomUUID().toString();
 
-        // Идентификатор выдаёт JPA, тот же id используется ключом сессии в Redis
         MiniGameSessionEntity session = new MiniGameSessionEntity();
         session.setUserName(userName);
         session.setScore(0);
@@ -107,11 +101,6 @@ public class MiniGameService {
         return new StartMiniGameResponse(sessionId, cfg.getGameDuration(), secret);
     }
 
-    /**
-     * Завершение раунда: проверка хеша и длительности, пересчёт очков по конфигу
-     * (множитель и потолок), запись истории, начисление в лидерборд турнира,
-     * награда и бонус с шансами из конфига.
-     */
     @Transactional
     public FinishMiniGameResponse finish(FinishMiniGameRequest req) {
         GameConfig cfg = gameConfigService.get();
@@ -196,7 +185,6 @@ public class MiniGameService {
         );
     }
 
-    /** Очки уходят в ZSET активного турнира; отсутствие турнира не должно ломать игру. */
     private void addScoreToActiveTournament(String userName, int score) {
         try {
             tournamentRedis.getActiveTournament().ifPresent(tournament ->
@@ -206,7 +194,6 @@ public class MiniGameService {
         }
     }
 
-    /** Лучший результат каждого игрока по истории успешных игр, до 100 записей. */
     @Transactional(readOnly = true)
     public List<MiniGameLeaderboardProjection> getLeaderboard() {
         return gameHistoryRepository.findLeaderboard();

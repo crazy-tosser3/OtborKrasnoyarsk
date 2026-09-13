@@ -11,6 +11,5 @@ public interface RewardRepository extends JpaRepository<RewardEntity, String> {
 
     List<RewardEntity> findByUserNameIgnoreCase(String username);
 
-    /** Сколько всего наград у игрока — каждая 4-я даёт бонус. */
     long countByUserName(String userName);
 }

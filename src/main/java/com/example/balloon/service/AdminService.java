@@ -78,23 +78,17 @@ public class AdminService {
         return "user deleted";
     }
 
-    /** Активный турнир (из Redis) — тот же список, что отдаёт публичный /api/tournament. */
     public List<ActiveTournamentResponse> getTournaments() {
         return tournamentRedis.getActiveTournament()
                 .map(List::of)
                 .orElseGet(List::of);
     }
 
-    /**
-     * Создание турнира: активный турнир пишется в Redis под ключ tournament:active.
-     * Идентификатором, как и в Go-версии, служит имя турнира.
-     */
     public ActiveTournamentResponse createTournament(CreateTournamentRequest request) {
         if (request.getName() == null || request.getName().isBlank()) {
             throw new BadRequestException("tournament name is required");
         }
 
-        // Postgres хранит время с точностью до микросекунд — иначе запись не найдётся по startedAt
         Instant startedAt = (request.getStartedAt() != null
                 ? request.getStartedAt()
                 : Instant.now()).truncatedTo(ChronoUnit.MICROS);
@@ -126,10 +120,6 @@ public class AdminService {
         return tournament;
     }
 
-    /**
-     * Удаление турнира: если id совпадает с активным — чистим Redis
-     * (сам турнир и его лидерборд), иначе удаляем запись из архива.
-     */
     @Transactional
     public String deleteTournament(String id) {
         Optional<ActiveTournamentResponse> active = tournamentRedis.getActiveTournament();
@@ -161,7 +151,6 @@ public class AdminService {
         return mapper.toRewardResponseList(rewardRepository.findAll());
     }
 
-    /** История игр, новые сверху — как ORDER BY played_at DESC в Go-версии. */
     @Transactional(readOnly = true)
     public List<GameHistoryResponse> getGames() {
         return mapper.toGameHistoryResponseList(gameHistoryRepository.findAllByOrderByPlayedAtDesc());

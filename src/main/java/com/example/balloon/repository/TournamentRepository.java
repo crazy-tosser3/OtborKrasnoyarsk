@@ -13,6 +13,5 @@ public interface TournamentRepository extends JpaRepository<TournamentEntity, St
 
     Optional<TournamentEntity> findFirstByNameAndStartedAt(String name, Instant startedAt);
 
-    /** Архив завершённых турниров, новые сверху. */
     List<TournamentEntity> findAllByOrderByEndedAtDesc();
 }

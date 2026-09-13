@@ -1,6 +1,5 @@
 package com.example.balloon.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +12,7 @@ public class RewardEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JsonProperty("id")
+    @Column(name = "id")
     private String id;
 
     @Column(name = "name")

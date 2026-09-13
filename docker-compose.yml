@@ -29,7 +29,11 @@ services:
     env_file:
       - .env
     ports:
+<<<<<<< HEAD
       - "8000:8000"
+=======
+      - "8001:8001"
+>>>>>>> fcbd5eb (reverseProxyFix)
     depends_on:
       - postgres
       - redis

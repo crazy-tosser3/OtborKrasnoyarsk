@@ -12,9 +12,13 @@ import (
 	"Otbor/internal/service"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	"github.com/gin-contrib/cors"
 =======
 >>>>>>> 7c52d81 (Final Commit)
+=======
+	"github.com/gin-contrib/cors"
+>>>>>>> fcbd5eb (reverseProxyFix)
 	"github.com/gin-gonic/gin"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -65,6 +69,9 @@ func main() {
 	router := gin.Default()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fcbd5eb (reverseProxyFix)
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
@@ -72,6 +79,7 @@ func main() {
 		ExposeHeaders:    []string{"*"},
 		AllowCredentials: false,
 	}))
+<<<<<<< HEAD
 =======
 	// router.Use(cors.New(cors.Config{
 	// 	AllowOrigins:     []string{"*"},
@@ -81,6 +89,8 @@ func main() {
 	// 	AllowCredentials: false,
 	// }))
 >>>>>>> 7c52d81 (Final Commit)
+=======
+>>>>>>> fcbd5eb (reverseProxyFix)
 
 	router.POST("/api/user/login", service.Login)
 	router.POST("/api/user/register", service.Register)
@@ -132,9 +142,15 @@ func main() {
 		ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	SetupFrontend(router)
 
 >>>>>>> 7c52d81 (Final Commit)
 	router.Run(":8000")
+=======
+	SetupFrontend(router)
+
+	router.Run(":8001")
+>>>>>>> fcbd5eb (reverseProxyFix)
 }

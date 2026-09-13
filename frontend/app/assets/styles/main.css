@@ -1,0 +1,178 @@
+@import 'tailwindcss';
+
+/* Класс-стратегия тёмной темы (@nuxtjs/color-mode вешает .dark на <html>). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Глобальные стили приложения — в чёрно-белой минималистичной стилистике
+   (как chulakov.ru): белый фон, почти-чёрный текст, тонкие границы, крупная
+   типографика Inter, скруглённые карточки. Токены живут в :root, а классы
+   .btn/.card — переиспользуемые элементы. */
+
+/* Светлая тема «Столото» (по умолчанию). */
+:root,
+.light {
+  --c-bg: #f1f2f4; /* светло-серый фон страницы (как на stoloto.ru) */
+  --c-card: #ffffff; /* фон карточек/шапки */
+  --c-ink: #16171b; /* основной текст */
+  --c-muted: #7b8090; /* вторичный текст */
+  --c-line: #e7e8ec; /* тонкие границы */
+  --c-surface: #f5f6f8; /* подложка-плитка внутри карточек */
+  --c-accent: #ffcd17; /* фирменное золото «Столото» */
+  --c-accent-deep: #e0a800; /* тёмное золото для hover/текста */
+  --radius: 20px; /* скругление карточек */
+}
+
+/* Тёмная тема (переключатель в шапке). */
+.dark {
+  --c-bg: #0f1116;
+  --c-card: #171a21;
+  --c-ink: #f2f3f5;
+  --c-muted: #9aa0ad;
+  --c-line: #2a2f39;
+  --c-surface: #1e222b;
+  --c-accent: #ffcd17;
+  --c-accent-deep: #ffd84d;
+}
+
+/* Привязываем CSS-переменные к утилитам Tailwind: bg-bg / text-ink / text-muted /
+   border-line / bg-surface / rounded-card. */
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --color-bg: var(--c-bg);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-line: var(--c-line);
+  --color-surface: var(--c-surface);
+  --color-card: var(--c-card);
+  --color-accent: var(--c-accent);
+  --color-accent-deep: var(--c-accent-deep);
+  --radius-card: var(--radius);
+
+  --animate-pulse-fast: pulse-fast 0.6s ease;
+  --animate-bpop: bpop 0.4s ease;
+  --animate-bob: bob 0.8s ease-in-out infinite alternate;
+  --animate-fade-out: fade-out 0.5s forwards;
+}
+
+@keyframes pulse-fast {
+  50% {
+    filter: brightness(1.5);
+  }
+}
+@keyframes bpop {
+  0% {
+    transform: scale(0.5);
+  }
+  60% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes bob {
+  to {
+    transform: translateY(4px);
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body,
+  #__nuxt {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  body {
+    background: var(--c-bg);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Страница без прокрутки (игра с канвасом) — класс вешается через useHead */
+  body.no-scroll {
+    overflow: hidden;
+  }
+  /* Канвас остаётся пиксельным — это графика игры, не текст интерфейса. */
+  canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* ── Переиспользуемые элементы ── */
+@layer components {
+  /* Кнопка-«таблетка»: основная — чёрная заливка, вторичная — обводка. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  }
+  /* Основная кнопка — жёлтый акцент с тёмным текстом. */
+  .btn--primary {
+    background: var(--c-accent);
+    color: var(--c-ink);
+  }
+  .btn--primary:hover {
+    background: var(--c-accent-deep);
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--c-ink);
+    border-color: var(--c-line);
+  }
+  .btn--ghost:hover {
+    border-color: var(--c-accent);
+  }
+  .btn--danger {
+    background: #c0362c;
+    color: #fff;
+  }
+  .btn--danger:hover {
+    background: #a32b22;
+  }
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+  .btn__arrow {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  /* Карточка: крупное скругление и мягкая тень (стиль «Столото»). */
+  .card {
+    background: var(--c-card);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(16, 17, 26, 0.04), 0 8px 24px -12px rgba(16, 17, 26, 0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

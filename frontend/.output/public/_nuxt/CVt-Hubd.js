@@ -1,0 +1,1 @@
+import{s as e}from"#entry";var t=e(`/img/user.png`);export{t};
